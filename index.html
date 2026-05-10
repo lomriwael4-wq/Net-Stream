@@ -458,7 +458,20 @@ function togImportSel(idx,el){ el.classList.toggle('selected'); if(importSelecti
 function doImport(){ importSelections.forEach(i=>{ let m=currentImportItems[i]; if(m && !catalog.some(x=>x.tmdbId===m.tmdbId)){ let newId=catalog.length>0?Math.max(...catalog.map(x=>x.id))+1:0; catalog.unshift({id:newId,title:m.title,type:m.type||'Film',year:m.year,rating:m.rating,genres:m.genres,desc:m.desc,status:'Actif',isNew:true,poster:m.poster,backdrop:m.backdrop||'',video:'',date:new Date().toLocaleDateString('fr-FR'),tmdbId:m.tmdbId}); } }); saveCatalog(); renderAdmTable(); renderDash(); closeImport(); addLog('Import TMDB'); toast('Import terminé','✓',true); }
 function toggleTheme(){ document.body.classList.toggle('light-mode'); localStorage.setItem('ns_theme',document.body.classList.contains('light-mode')?'light':'dark'); }
 function goBack(){ window.history.length>1?history.back():showView('home'); }
-let sbuf=''; function chkSecret(e){ let k=localStorage.getItem('ns_admin_key')||'nitro06'; sbuf+=e.key; if(sbuf.length>20)sbuf=sbuf.slice(-20); if(sbuf.includes(k)){ sbuf=''; addLog('Accès admin'); showView('admin'); e.preventDefault(); } }
+let sbuf='';
+function chkSecret(e){
+  let k = localStorage.getItem('ns_admin_key') || 'nitro06';
+  // Ajoute la touche pressée au buffer
+  sbuf += e.key;
+  if(sbuf.length > 20) sbuf = sbuf.slice(-20);
+  // Vérifie si le code secret est contenu dans le buffer
+  if(sbuf.toLowerCase().includes(k.toLowerCase())){
+    sbuf = '';
+    addLog('Accès admin via code secret');
+    showView('admin');
+    e.preventDefault();
+  }
+}
 function toast(msg,ic='✓',ok=true){ let t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; document.getElementById('toastIc').textContent=ic; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
 window.addEventListener('scroll',()=>{document.getElementById('topnav')?.classList.toggle('solid',window.scrollY>60);});
 loadData(); checkWelcome(); renderHome(); fetchIP(); if(localStorage.getItem('ns_theme')==='light') document.body.classList.add('light-mode');
