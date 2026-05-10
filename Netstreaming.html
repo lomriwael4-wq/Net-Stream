@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Net Streaming</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --accent:#FFFFFF;
+  --accent-dim:rgba(255,255,255,0.12);
+  --accent-mid:rgba(255,255,255,0.55);
+  --dark:#080808;--dark2:#0F0F0F;--dark3:#181818;--dark4:#222222;
+  --text:#F5F5F5;--muted:#888;--muted2:#444;
+  --red:#E53935;--green:#388E3C;
+  --border:rgba(255,255,255,0.08);
+  --border-hover:rgba(255,255,255,0.22);
+}
+body{background:var(--dark);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button{font-family:'DM Sans',sans-serif;cursor:pointer}
+input,textarea,select{font-family:'DM Sans',sans-serif}
+ 
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--dark2)}
+::-webkit-scrollbar-thumb{background:var(--muted2);border-radius:3px}
+ 
+.view{display:none;min-height:100vh}
+.view.active{display:block}
+ 
+/* ===== NAV ===== */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 3rem;background:linear-gradient(to bottom,rgba(8,8,8,0.98) 0%,rgba(8,8,8,0.0) 100%);transition:background 0.3s}
+nav.scrolled{background:rgba(8,8,8,0.98)!important;border-bottom:1px solid var(--border)}
+.logo{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:900;color:#fff;letter-spacing:0.02em;cursor:pointer;display:flex;align-items:center;gap:0.5rem}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:#fff;display:inline-block;margin-bottom:2px}
+.logo sub{font-size:0.48rem;letter-spacing:0.22em;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400;vertical-align:super;margin-left:4px;text-transform:uppercase}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{font-size:0.82rem;letter-spacing:0.05em;color:var(--muted);transition:color 0.2s}
+.nav-links a:hover,.nav-links a.active{color:#fff}
+.nav-right{display:flex;align-items:center;gap:0.9rem}
+.nav-search{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--muted);padding:0.42rem 0.85rem;border-radius:5px;font-size:0.8rem;width:190px;transition:all 0.2s}
+.nav-search:focus{outline:none;border-color:rgba(255,255,255,0.35);color:#fff;background:rgba(255,255,255,0.07)}
+.nav-search::placeholder{color:var(--muted2)}
+.btn-white{background:#fff;color:#000;border:none;padding:0.45rem 1.2rem;border-radius:5px;font-size:0.78rem;font-weight:500;letter-spacing:0.06em;transition:opacity 0.2s}
+.btn-white:hover{opacity:0.85}
+.btn-outline{background:none;border:1px solid var(--border-hover);color:var(--text);padding:0.45rem 1.1rem;border-radius:5px;font-size:0.78rem;transition:all 0.2s}
+.btn-outline:hover{border-color:#fff;background:rgba(255,255,255,0.05)}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--dark3);border:1px solid var(--border-hover);display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:500;color:#fff;cursor:pointer}
+ 
+/* ===== HERO ===== */
+.hero{position:relative;height:100vh;min-height:600px;display:flex;align-items:flex-end;padding:0 3rem 5rem;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(125deg,#050505 0%,#111 40%,#0a0a0a 100%)}
+.hero-grain{position:absolute;inset:0;opacity:0.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")}
+.hero-lines{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 60px,rgba(255,255,255,0.018) 60px,rgba(255,255,255,0.018) 61px)}
+.hero-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 65% 45%,transparent 25%,rgba(4,4,4,0.75) 100%)}
+.hero-bottom-fade{position:absolute;bottom:0;left:0;right:0;height:45%;background:linear-gradient(to bottom,transparent,var(--dark))}
+.hero-poster-area{position:absolute;right:0;top:0;bottom:0;width:58%;overflow:hidden}
+.hero-poster-inner{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:2px;opacity:0.28}
+.poster-cell{border-radius:2px}
+.poster-cell:nth-child(1){background:linear-gradient(135deg,#1a1a1a,#050505);grid-row:1/3}
+.poster-cell:nth-child(2){background:linear-gradient(135deg,#0d0d0d,#1a1a1a)}
+.poster-cell:nth-child(3){background:linear-gradient(135deg,#111,#050505)}
+.poster-cell:nth-child(4){background:linear-gradient(135deg,#181818,#080808)}
+.poster-cell:nth-child(5){background:linear-gradient(135deg,#0a0a0a,#141414)}
+.poster-fade{position:absolute;left:0;top:0;bottom:0;width:55%;background:linear-gradient(to right,var(--dark) 25%,transparent)}
+.poster-fade-right{position:absolute;right:0;top:0;bottom:0;width:20%;background:linear-gradient(to left,var(--dark),transparent)}
+.hero-side-line{position:absolute;right:42%;top:10%;bottom:10%;width:1px;background:linear-gradient(to bottom,transparent,rgba(255,255,255,0.1) 30%,rgba(255,255,255,0.1) 70%,transparent)}
+ 
+.hero-content{position:relative;z-index:2;max-width:640px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:0.6rem;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);font-size:0.67rem;letter-spacing:0.22em;text-transform:uppercase;padding:0.32rem 0.8rem;border-radius:3px;margin-bottom:1.6rem;animation:fadeUp 0.6s ease both}
+.hero-eyebrow-dot{width:5px;height:5px;border-radius:50%;background:#fff;animation:pulse 2s infinite}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(3rem,5.5vw,5.5rem);font-weight:900;line-height:1.0;letter-spacing:-0.025em;margin-bottom:1.1rem;animation:fadeUp 0.6s 0.1s ease both;color:#fff}
+.hero-title em{font-style:italic;color:rgba(255,255,255,0.65)}
+.hero-desc{font-size:0.93rem;color:rgba(245,245,245,0.55);line-height:1.75;max-width:470px;margin-bottom:2rem;font-weight:300;animation:fadeUp 0.6s 0.2s ease both}
+.hero-meta{display:flex;align-items:center;gap:1.4rem;margin-bottom:2.2rem;font-size:0.78rem;animation:fadeUp 0.6s 0.3s ease both}
+.hero-rating{display:flex;align-items:center;gap:0.4rem;color:#fff;font-weight:500}
+.hero-year,.hero-duration,.hero-genre{color:var(--muted);letter-spacing:0.04em}
+.hero-dot{width:3px;height:3px;border-radius:50%;background:var(--muted2)}
+.hero-actions{display:flex;gap:1rem;animation:fadeUp 0.6s 0.4s ease both}
+.btn-play{display:flex;align-items:center;gap:0.65rem;background:#fff;color:#000;border:none;padding:0.85rem 2.2rem;border-radius:5px;font-size:0.88rem;font-weight:500;letter-spacing:0.04em;transition:all 0.2s}
+.btn-play:hover{opacity:0.88;transform:translateY(-1px)}
+.btn-play svg{width:15px;height:15px;fill:#000}
+.btn-info{display:flex;align-items:center;gap:0.6rem;background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.18);padding:0.85rem 1.8rem;border-radius:5px;font-size:0.88rem;backdrop-filter:blur(12px);transition:all 0.2s}
+.btn-info:hover{background:rgba(255,255,255,0.14);border-color:rgba(255,255,255,0.35)}
+.btn-info svg{width:15px;height:15px;stroke:currentColor;fill:none}
+ 
+/* ===== SECTIONS ===== */
+.section{padding:2rem 3rem}
+.section-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.5rem}
+.section-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:#fff}
+.section-title::before{content:'';display:inline-block;width:2px;height:1em;background:#fff;margin-right:0.65rem;vertical-align:middle;opacity:0.5}
+.section-link{font-size:0.75rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;transition:color 0.2s;cursor:pointer}
+.section-link:hover{color:#fff}
+ 
+/* ===== CARDS ===== */
+.cards-row{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}
+.cards-row.large{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.card{position:relative;border-radius:5px;overflow:hidden;cursor:pointer;transition:transform 0.25s,box-shadow 0.25s;background:var(--dark3)}
+.card:hover{transform:translateY(-6px) scale(1.015);box-shadow:0 20px 50px rgba(0,0,0,0.8)}
+.card-poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block}
+.card-poster-placeholder{width:100%;aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:var(--muted2);position:relative;overflow:hidden;background:linear-gradient(135deg,var(--dark3),var(--dark4))}
+.card-poster-icon{position:relative;z-index:1}
+.card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(4,4,4,0.97) 0%,rgba(4,4,4,0.25) 55%,transparent 100%);opacity:0;transition:opacity 0.22s;display:flex;flex-direction:column;justify-content:flex-end;padding:0.9rem}
+.card:hover .card-overlay{opacity:1}
+.card-info{position:absolute;bottom:0;left:0;right:0;padding:0.7rem;background:linear-gradient(to top,rgba(8,8,8,0.92),transparent)}
+.card-title{font-size:0.82rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+.card-sub{font-size:0.68rem;color:var(--muted);margin-top:2px}
+.card-badge{position:absolute;top:8px;left:8px;background:#fff;color:#000;font-size:0.58rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;padding:2px 7px;border-radius:2px}
+.card-badge.new{background:var(--red);color:#fff}
+.card-badge.serie{background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.25)}
+.card-rating{display:flex;align-items:center;gap:3px;font-size:0.7rem;color:#fff;margin-top:4px;opacity:0.8}
+.card-play-btn{width:38px;height:38px;border-radius:50%;background:#fff;border:none;display:flex;align-items:center;justify-content:center;margin:0 auto 0.5rem;transition:transform 0.2s,opacity 0.2s}
+.card-play-btn:hover{transform:scale(1.12)}
+.card-play-btn svg{width:13px;height:13px;fill:#000;margin-left:2px}
+ 
+/* ===== FILTER TABS ===== */
+.filter-bar{display:flex;gap:0.5rem;padding:0 3rem 1.8rem;overflow-x:auto;scrollbar-width:none}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-tab{background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.32rem 1rem;border-radius:20px;font-size:0.77rem;white-space:nowrap;transition:all 0.2s;cursor:pointer}
+.filter-tab:hover{border-color:rgba(255,255,255,0.3);color:#fff}
+.filter-tab.active{background:#fff;border-color:#fff;color:#000;font-weight:500}
+ 
+/* ===== PLAYER MODAL ===== */
+.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.modal-overlay.open{display:flex}
+.player-modal{background:var(--dark2);border-radius:10px;width:90%;max-width:880px;overflow:hidden;border:1px solid var(--border);animation:modalIn 0.3s ease}
+.player-screen{width:100%;aspect-ratio:16/9;background:#000;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.player-screen-bg{position:absolute;inset:0;background:#050505}
+.player-screen-lines{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,0.018) 3px,rgba(255,255,255,0.018) 4px)}
+.player-center{position:relative;z-index:2;text-align:center}
+.player-play-icon{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;cursor:pointer;transition:all 0.2s}
+.player-play-icon:hover{background:rgba(255,255,255,0.18);border-color:#fff}
+.player-play-icon svg{width:26px;height:26px;fill:#fff;margin-left:4px}
+.player-movie-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:rgba(255,255,255,0.7)}
+.player-hint{font-size:0.72rem;color:var(--muted);margin-top:0.4rem}
+.player-controls{padding:1.1rem 1.5rem;background:var(--dark3)}
+.player-progress-bar{width:100%;height:3px;background:rgba(255,255,255,0.1);border-radius:2px;cursor:pointer;margin-bottom:1rem;position:relative}
+.player-progress-fill{width:35%;height:100%;background:#fff;border-radius:2px;position:relative;transition:width 0.1s linear}
+.player-progress-fill::after{content:'';position:absolute;right:-5px;top:50%;transform:translateY(-50%);width:11px;height:11px;border-radius:50%;background:#fff}
+.player-ctrl-row{display:flex;align-items:center;justify-content:space-between}
+.player-ctrl-left,.player-ctrl-right{display:flex;align-items:center;gap:1.2rem}
+.ctrl-btn{background:none;border:none;color:var(--muted);font-size:1.05rem;padding:0.3rem;transition:color 0.2s;cursor:pointer}
+.ctrl-btn:hover,.ctrl-btn.active{color:#fff}
+.player-time{font-size:0.76rem;color:var(--muted)}
+.player-title-bar{padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.close-modal{background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;transition:color 0.2s;line-height:1}
+.close-modal:hover{color:#fff}
+ 
+/* ===== DETAIL ===== */
+#view-detail .hero{height:72vh;min-height:420px;padding-bottom:3rem}
+.detail-content{padding:0 3rem 4rem}
+.detail-grid{display:grid;grid-template-columns:1fr 270px;gap:3rem}
+.detail-desc{font-size:0.93rem;color:rgba(245,245,245,0.6);line-height:1.85;font-weight:300;margin-bottom:2rem}
+.detail-label{font-size:0.67rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem}
+.tags{display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.3rem}
+.tag{background:rgba(255,255,255,0.06);border:1px solid var(--border-hover);color:rgba(255,255,255,0.7);font-size:0.7rem;padding:0.22rem 0.6rem;border-radius:3px}
+.detail-info-block{background:var(--dark3);border-radius:8px;padding:1.2rem;border:1px solid var(--border)}
+.detail-info-row{display:flex;justify-content:space-between;align-items:center;padding:0.55rem 0;border-bottom:1px solid var(--border);font-size:0.81rem}
+.detail-info-row:last-child{border-bottom:none}
+.detail-info-row .lbl{color:var(--muted)}
+.seasons-tabs{display:flex;gap:0.4rem;margin-bottom:1rem;flex-wrap:wrap}
+.season-tab{background:var(--dark3);border:1px solid var(--border);color:var(--muted);padding:0.3rem 0.85rem;border-radius:4px;font-size:0.77rem;cursor:pointer;transition:all 0.2s}
+.season-tab.active,.season-tab:hover{border-color:rgba(255,255,255,0.4);color:#fff;background:rgba(255,255,255,0.06)}
+.episodes-list{display:flex;flex-direction:column;gap:9px}
+.episode-item{background:var(--dark3);border:1px solid var(--border);border-radius:6px;padding:0.9rem;display:flex;gap:0.9rem;align-items:center;cursor:pointer;transition:border-color 0.2s,background 0.2s}
+.episode-item:hover{border-color:rgba(255,255,255,0.25);background:var(--dark4)}
+.ep-num{font-size:0.68rem;color:var(--muted);min-width:22px;text-align:center;font-weight:500}
+.ep-thumb{width:78px;height:48px;border-radius:4px;background:var(--dark4);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--muted2)}
+.ep-info{flex:1;min-width:0}
+.ep-title{font-size:0.83rem;font-weight:500}
+.ep-desc{font-size:0.73rem;color:var(--muted);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ep-duration{font-size:0.71rem;color:var(--muted2);white-space:nowrap}
+ 
+/* ===== ADMIN ===== */
+#view-admin{background:var(--dark2);min-height:100vh}
+.admin-nav{background:var(--dark);border-bottom:1px solid var(--border);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:100}
+.admin-logo{font-family:'Playfair Display',serif;color:#fff;font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:0.5rem}
+.admin-logo span{font-family:'DM Sans',sans-serif;font-size:0.62rem;letter-spacing:0.15em;color:var(--muted);display:block;text-transform:uppercase;font-weight:400;margin-top:1px}
+.admin-badge{background:rgba(255,255,255,0.08);border:1px solid var(--border);color:var(--muted);font-size:0.65rem;padding:0.18rem 0.55rem;border-radius:3px;letter-spacing:0.1em;text-transform:uppercase}
+.admin-user{display:flex;align-items:center;gap:0.75rem;font-size:0.82rem;color:var(--muted)}
+.admin-layout{display:grid;grid-template-columns:215px 1fr;min-height:calc(100vh - 64px)}
+.admin-sidebar{background:var(--dark);border-right:1px solid var(--border);padding:1.5rem 0}
+.sidebar-section-label{font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted2);padding:0 1.25rem;margin:1rem 0 0.4rem}
+.sidebar-link{display:flex;align-items:center;gap:0.7rem;padding:0.65rem 1.25rem;font-size:0.82rem;color:var(--muted);cursor:pointer;transition:all 0.2s;border-left:2px solid transparent}
+.sidebar-link svg{width:15px;height:15px;stroke:currentColor;fill:none;flex-shrink:0}
+.sidebar-link:hover{color:#fff;background:rgba(255,255,255,0.03)}
+.sidebar-link.active{color:#fff;border-left-color:#fff;background:rgba(255,255,255,0.05)}
+.admin-main{padding:2rem;overflow-y:auto}
+.admin-page{display:none}
+.admin-page.active{display:block}
+ 
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:1.2rem}
+.stat-number{font-size:1.9rem;font-weight:700;font-family:'Playfair Display',serif;color:#fff}
+.stat-label{font-size:0.73rem;color:var(--muted);margin-top:0.2rem}
+.stat-change.up{font-size:0.7rem;color:#66BB6A;margin-top:0.4rem}
+.stat-change.down{font-size:0.7rem;color:var(--red);margin-top:0.4rem}
+ 
+.admin-table-wrap{background:var(--dark3);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.admin-table-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.table-search{background:var(--dark4);border:1px solid var(--border);color:#fff;padding:0.48rem 0.9rem;border-radius:5px;font-size:0.81rem;width:215px;transition:border-color 0.2s}
+.table-search:focus{outline:none;border-color:rgba(255,255,255,0.4)}
+.table-search::placeholder{color:var(--muted2)}
+table{width:100%;border-collapse:collapse;font-size:0.81rem}
+th{background:var(--dark4);padding:0.72rem 1rem;text-align:left;font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);font-weight:500;white-space:nowrap}
+td{padding:0.78rem 1rem;border-bottom:1px solid rgba(255,255,255,0.03);color:var(--text);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.015)}
+.table-thumb{width:34px;height:48px;border-radius:3px;background:var(--dark4);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0}
+.table-title-cell{display:flex;align-items:center;gap:0.7rem}
+.table-type-badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:0.63rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase}
+.type-film{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);border:1px solid var(--border-hover)}
+.type-serie{background:rgba(255,255,255,0.04);color:var(--muted);border:1px solid var(--border)}
+.badge-active{display:inline-block;padding:2px 9px;border-radius:10px;font-size:0.63rem;background:rgba(56,142,60,0.15);color:#81C784;border:1px solid rgba(56,142,60,0.3)}
+.badge-draft{display:inline-block;padding:2px 9px;border-radius:10px;font-size:0.63rem;background:rgba(255,255,255,0.05);color:var(--muted);border:1px solid var(--border)}
+.action-btns{display:flex;gap:0.4rem}
+.btn-icon{background:none;border:1px solid var(--border);color:var(--muted);width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;cursor:pointer}
+.btn-icon:hover{border-color:rgba(255,255,255,0.4);color:#fff}
+.btn-icon.danger:hover{border-color:var(--red);color:var(--red)}
+.btn-icon svg{width:12px;height:12px;stroke:currentColor;fill:none}
+ 
+/* Admin form */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.form-group{display:flex;flex-direction:column;gap:0.38rem}
+.form-label{font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.form-label .req{color:#fff;margin-left:2px}
+.form-input,.form-select,.form-textarea{background:var(--dark4);border:1px solid var(--border);color:#fff;padding:0.62rem 0.9rem;border-radius:5px;font-size:0.87rem;transition:border-color 0.2s;width:100%}
+.form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:rgba(255,255,255,0.45);background:var(--dark3)}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--muted2)}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.75rem center}
+.form-select option{background:var(--dark3)}
+.form-textarea{resize:vertical;min-height:100px}
+.form-hint{font-size:0.7rem;color:var(--muted2)}
+.form-section{margin-bottom:1.6rem}
+.form-section-title{font-size:0.75rem;font-weight:500;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.5rem}
+.form-section-title svg{width:13px;height:13px;stroke:currentColor;fill:none}
+.upload-zone{border:1.5px dashed rgba(255,255,255,0.12);border-radius:7px;padding:1.8rem;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--dark4)}
+.upload-zone:hover{border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.03)}
+.upload-icon{font-size:1.8rem;margin-bottom:0.5rem;opacity:0.4}
+.upload-text{font-size:0.8rem;color:var(--muted)}
+.upload-hint{font-size:0.7rem;color:var(--muted2);margin-top:0.25rem}
+.genre-chips{display:flex;gap:0.4rem;flex-wrap:wrap}
+.genre-chip{padding:0.28rem 0.7rem;border-radius:20px;border:1px solid var(--border);font-size:0.74rem;cursor:pointer;transition:all 0.2s;color:var(--muted)}
+.genre-chip.selected{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.4);color:#fff}
+.season-episodes-block{background:var(--dark4);border-radius:7px;border:1px solid var(--border);overflow:hidden;margin-bottom:0.6rem}
+.season-header{padding:0.72rem 1rem;display:flex;align-items:center;justify-content:space-between;background:var(--dark3);cursor:pointer}
+.season-ep-list{padding:0.75rem;display:flex;flex-direction:column;gap:0.45rem}
+.ep-input-row{display:grid;grid-template-columns:36px 1fr 88px 88px;gap:0.45rem;align-items:center;font-size:0.79rem}
+.ep-input-row span{color:var(--muted);text-align:center}
+.form-actions{display:flex;gap:0.65rem;justify-content:flex-end;padding-top:1rem;border-top:1px solid var(--border);margin-top:1rem}
+.btn-cancel{background:none;border:1px solid var(--border);color:var(--muted);padding:0.58rem 1.3rem;border-radius:5px;font-size:0.84rem;transition:all 0.2s}
+.btn-cancel:hover{border-color:var(--border-hover);color:#fff}
+.btn-save{background:#fff;color:#000;border:none;padding:0.58rem 1.6rem;border-radius:5px;font-size:0.84rem;font-weight:500;transition:opacity 0.2s}
+.btn-save:hover{opacity:0.85}
+.btn-save-draft{background:rgba(255,255,255,0.06);border:1px solid var(--border);color:#fff;padding:0.58rem 1.3rem;border-radius:5px;font-size:0.84rem;transition:all 0.2s}
+.btn-save-draft:hover{background:rgba(255,255,255,0.1)}
+ 
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem}
+.page-title{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:700;color:#fff}
+.page-subtitle{font-size:0.8rem;color:var(--muted);margin-top:0.15rem}
+.breadcrumb{font-size:0.77rem;color:var(--muted);display:flex;align-items:center;gap:0.4rem;margin-bottom:0.9rem}
+.breadcrumb span{cursor:pointer;transition:color 0.2s}
+.breadcrumb span:hover{color:#fff}
+.breadcrumb-sep{color:var(--muted2)}
+ 
+.admin-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+.admin-tab{padding:0.65rem 1.15rem;font-size:0.8rem;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.2s}
+.admin-tab.active{color:#fff;border-bottom-color:#fff}
+.admin-tab:hover:not(.active){color:rgba(255,255,255,0.7)}
+ 
+/* Toast */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--dark3);border:1px solid var(--border-hover);border-radius:8px;padding:0.85rem 1.2rem;font-size:0.83rem;display:flex;align-items:center;gap:0.7rem;z-index:1000;transform:translateY(100px);opacity:0;transition:all 0.3s;max-width:310px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-left:3px solid #66BB6A}
+.toast.error{border-left:3px solid var(--red)}
+ 
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes modalIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
+ 
+@media(max-width:900px){
+  nav,.hero,.section{padding-left:1.25rem;padding-right:1.25rem}
+  .filter-bar{padding-left:1.25rem}
+  .hero-title{font-size:2.4rem}
+  .detail-grid{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .admin-layout{grid-template-columns:1fr}
+  .admin-sidebar{display:none}
+}
+</style>
+</head>
+<body>
+ 
+<!-- NAV -->
+<nav id="main-nav">
+  <div class="logo" onclick="showView('home')">
+    <span class="logo-dot"></span>Net Streaming<sub>HD</sub>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#" class="active" onclick="showView('home');return false">Accueil</a></li>
+    <li><a href="#" onclick="filterCategory('Film');return false">Films</a></li>
+    <li><a href="#" onclick="filterCategory('Série');return false">Séries</a></li>
+    <li><a href="#" onclick="return false">Ma liste</a></li>
+  </ul>
+  <div class="nav-right">
+    <input type="text" class="nav-search" id="searchInput" placeholder="Rechercher..." oninput="handleSearch(this.value)" onkeydown="checkSecret(event)">
+    <div class="avatar">AB</div>
+  </div>
+</nav>
+ 
+<!-- ===== HOME ===== -->
+<div id="view-home" class="view active">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grain"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-vignette"></div>
+    <div class="hero-poster-area">
+      <div class="hero-poster-inner">
+        <div class="poster-cell"></div><div class="poster-cell"></div>
+        <div class="poster-cell"></div><div class="poster-cell"></div><div class="poster-cell"></div>
+      </div>
+      <div class="poster-fade"></div><div class="poster-fade-right"></div>
+    </div>
+    <div class="hero-side-line"></div>
+    <div class="hero-bottom-fade"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span>À la une cette semaine</div>
+      <h1 class="hero-title">Le <em>Dernier</em><br>Horizon</h1>
+      <p class="hero-desc">Dans un futur proche, une équipe d'explorateurs traverse une fissure spatio-temporelle pour sauver l'humanité d'une extinction imminente.</p>
+      <div class="hero-meta">
+        <div class="hero-rating">★ <strong>8.7</strong></div>
+        <div class="hero-dot"></div>
+        <span class="hero-year">2024</span>
+        <div class="hero-dot"></div>
+        <span class="hero-duration">2h 18min</span>
+        <div class="hero-dot"></div>
+        <span class="hero-genre">Sci-Fi · Aventure</span>
+      </div>
+      <div class="hero-actions">
+        <button class="btn-play" onclick="openPlayer('Le Dernier Horizon')">
+          <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Regarder
+        </button>
+        <button class="btn-info" onclick="showDetail(0)">
+          <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Plus d'infos
+        </button>
+      </div>
+    </div>
+  </div>
+ 
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-tab active" onclick="setFilter('Tous',this)">Tous</button>
+    <button class="filter-tab" onclick="setFilter('Film',this)">Films</button>
+    <button class="filter-tab" onclick="setFilter('Série',this)">Séries</button>
+    <button class="filter-tab" onclick="setFilter('Action',this)">Action</button>
+    <button class="filter-tab" onclick="setFilter('Drame',this)">Drame</button>
+    <button class="filter-tab" onclick="setFilter('Sci-Fi',this)">Sci-Fi</button>
+    <button class="filter-tab" onclick="setFilter('Thriller',this)">Thriller</button>
+    <button class="filter-tab" onclick="setFilter('Comédie',this)">Comédie</button>
+    <button class="filter-tab" onclick="setFilter('Horreur',this)">Horreur</button>
+  </div>
+ 
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Tendances du moment</h2>
+      <span class="section-link">Voir tout →</span>
+    </div>
+    <div class="cards-row large" id="trending-grid"></div>
+  </section>
+ 
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Nouveautés</h2>
+      <span class="section-link">Voir tout →</span>
+    </div>
+    <div class="cards-row" id="new-grid"></div>
+  </section>
+ 
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Séries Populaires</h2>
+      <span class="section-link">Voir tout →</span>
+    </div>
+    <div class="cards-row large" id="series-grid"></div>
+  </section>
+</div>
+ 
+<!-- ===== DETAIL ===== -->
+<div id="view-detail" class="view">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grain"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-vignette"></div>
+    <div class="hero-poster-area">
+      <div class="hero-poster-inner">
+        <div class="poster-cell"></div><div class="poster-cell"></div>
+        <div class="poster-cell"></div><div class="poster-cell"></div><div class="poster-cell"></div>
+      </div>
+      <div class="poster-fade"></div><div class="poster-fade-right"></div>
+    </div>
+    <div class="hero-bottom-fade"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow" id="detail-badge"><span class="hero-eyebrow-dot"></span>Film · 2024</div>
+      <h1 class="hero-title" id="detail-title">Titre</h1>
+      <div class="hero-meta" id="detail-meta"></div>
+      <div class="hero-actions">
+        <button class="btn-play" id="detail-play-btn">
+          <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Regarder
+        </button>
+        <button class="btn-info" onclick="showView('home')">← Retour</button>
+      </div>
+    </div>
+  </div>
+  <div class="detail-content">
+    <div class="detail-grid">
+      <div>
+        <p class="detail-desc" id="detail-desc"></p>
+        <div style="margin-bottom:1.5rem">
+          <p class="detail-label">Genres</p>
+          <div class="tags" id="detail-genres"></div>
+        </div>
+        <div id="detail-episodes-section" style="display:none">
+          <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:1rem;color:#fff">Épisodes</h3>
+          <div class="seasons-tabs" id="detail-seasons"></div>
+          <div class="episodes-list" id="detail-episodes"></div>
+        </div>
+      </div>
+      <div>
+        <div class="detail-info-block" id="detail-info-block"></div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- ===== ADMIN ===== -->
+<div id="view-admin" class="view">
+  <div class="admin-nav">
+    <div style="display:flex;align-items:center;gap:0.75rem">
+      <div class="admin-logo">
+        <span class="logo-dot" style="width:6px;height:6px"></span>
+        Net Streaming
+      </div>
+      <span class="admin-badge">Admin</span>
+    </div>
+    <div class="admin-user">
+      <div class="avatar" style="width:30px;height:30px;font-size:0.68rem">AD</div>
+      <span>Super Admin</span>
+      <button class="btn-outline" style="font-size:0.73rem;padding:0.32rem 0.8rem" onclick="showView('home')">← Site</button>
+    </div>
+  </div>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <p class="sidebar-section-label">Général</p>
+      <div class="sidebar-link active" onclick="showAdminPage('dashboard',this)">
+        <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Tableau de bord
+      </div>
+      <p class="sidebar-section-label">Contenu</p>
+      <div class="sidebar-link" onclick="showAdminPage('films',this)">
+        <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v20M17 2v20M2 12h20M2 7h5M17 7h5M2 17h5M17 17h5"/></svg>
+        Films & Séries
+      </div>
+      <div class="sidebar-link" onclick="showAdminPage('add-content',this)">
+        <svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Ajouter du contenu
+      </div>
+      <p class="sidebar-section-label">Gestion</p>
+      <div class="sidebar-link" onclick="showAdminPage('users',this)">
+        <svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Utilisateurs
+      </div>
+      <div class="sidebar-link" onclick="showAdminPage('settings',this)">
+        <svg viewBox="0 0 24 24" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Paramètres
+      </div>
+    </aside>
+ 
+    <main class="admin-main">
+ 
+      <!-- Dashboard -->
+      <div id="admin-dashboard" class="admin-page active">
+        <div class="page-header">
+          <div><div class="page-title">Tableau de bord</div><div class="page-subtitle">Vue d'ensemble de Net Streaming</div></div>
+          <button class="btn-white" onclick="showAdminPage('add-content',null)">+ Ajouter</button>
+        </div>
+        <div class="stats-grid" id="dashboard-stats"></div>
+        <div class="admin-table-wrap">
+          <div class="admin-table-header"><strong style="font-size:0.85rem;color:#fff">Ajouts récents</strong></div>
+          <table><thead><tr><th>Titre</th><th>Type</th><th>Genres</th><th>Statut</th><th>Date</th></tr></thead>
+          <tbody id="dashboard-tbody"></tbody></table>
+        </div>
+      </div>
+ 
+      <!-- List -->
+      <div id="admin-films" class="admin-page">
+        <div class="page-header">
+          <div><div class="page-title">Films & Séries</div><div class="page-subtitle" id="content-count-label">—</div></div>
+          <button class="btn-white" onclick="showAdminPage('add-content',null)">+ Ajouter</button>
+        </div>
+        <div class="admin-tabs">
+          <div class="admin-tab active" onclick="filterAdminTable('Tous',this)">Tout</div>
+          <div class="admin-tab" onclick="filterAdminTable('Film',this)">Films</div>
+          <div class="admin-tab" onclick="filterAdminTable('Série',this)">Séries</div>
+          <div class="admin-tab" onclick="filterAdminTable('Actif',this)">Publiés</div>
+          <div class="admin-tab" onclick="filterAdminTable('Brouillon',this)">Brouillons</div>
+        </div>
+        <div class="admin-table-wrap">
+          <div class="admin-table-header">
+            <input type="text" class="table-search" placeholder="Rechercher..." id="admin-search" oninput="adminSearch(this.value)">
+            <span style="font-size:0.77rem;color:var(--muted)" id="table-count"></span>
+          </div>
+          <table><thead><tr><th>Titre</th><th>Type</th><th>Année</th><th>Genres</th><th>Note</th><th>Statut</th><th>Actions</th></tr></thead>
+          <tbody id="admin-tbody"></tbody></table>
+        </div>
+      </div>
+ 
+      <!-- Add/Edit form -->
+      <div id="admin-add-content" class="admin-page">
+        <div class="breadcrumb">
+          <span onclick="showAdminPage('films',null)">Films & Séries</span>
+          <span class="breadcrumb-sep">›</span>
+          <span id="form-breadcrumb-label" style="color:#fff">Ajouter</span>
+        </div>
+        <div class="page-header">
+          <div><div class="page-title" id="form-page-title">Nouveau contenu</div><div class="page-subtitle">Remplissez les informations ci-dessous</div></div>
+        </div>
+ 
+        <div style="background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:1.75rem" id="content-form">
+ 
+          <div class="form-section">
+            <div class="form-section-title">Type de contenu</div>
+            <div style="display:flex;gap:0.6rem">
+              <button class="filter-tab active" id="type-film-btn" onclick="setContentType('Film')">🎬 Film</button>
+              <button class="filter-tab" id="type-serie-btn" onclick="setContentType('Série')">📺 Série</button>
+            </div>
+            <input type="hidden" id="f-type" value="Film">
+          </div>
+ 
+          <div class="form-section">
+            <div class="form-section-title">Informations générales</div>
+            <div class="form-grid">
+              <div class="form-group" style="grid-column:1/-1">
+                <label class="form-label">Titre <span class="req">*</span></label>
+                <input type="text" class="form-input" id="f-title" placeholder="Ex : Le Dernier Horizon">
+              </div>
+              <div class="form-group" style="grid-column:1/-1">
+                <label class="form-label">Synopsis <span class="req">*</span></label>
+                <textarea class="form-textarea" id="f-desc" placeholder="Description..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Année <span class="req">*</span></label>
+                <input type="number" class="form-input" id="f-year" placeholder="2024" min="1900" max="2030">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Note /10</label>
+                <input type="number" class="form-input" id="f-rating" placeholder="8.5" min="0" max="10" step="0.1">
+              </div>
+              <div class="form-group" id="f-duration-group">
+                <label class="form-label">Durée</label>
+                <input type="text" class="form-input" id="f-duration" placeholder="2h 18min">
+              </div>
+              <div class="form-group" id="f-seasons-group" style="display:none">
+                <label class="form-label">Nombre de saisons</label>
+                <input type="number" class="form-input" id="f-seasons" placeholder="1" min="1" oninput="updateSeasonsUI()">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Réalisateur</label>
+                <input type="text" class="form-input" id="f-director" placeholder="Nom du réalisateur">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Casting</label>
+                <input type="text" class="form-input" id="f-cast" placeholder="Acteur 1, Acteur 2...">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Langue originale</label>
+                <select class="form-select" id="f-language">
+                  <option>Français</option><option>Anglais</option><option>Espagnol</option>
+                  <option>Coréen</option><option>Japonais</option><option>Autre</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Statut</label>
+                <select class="form-select" id="f-status">
+                  <option value="Actif">Publié</option>
+                  <option value="Brouillon">Brouillon</option>
+                </select>
+              </div>
+            </div>
+          </div>
+ 
+          <div class="form-section">
+            <div class="form-section-title">Genres</div>
+            <div class="genre-chips" id="genre-chips">
+              <span class="genre-chip" onclick="toggleGenre(this,'Action')">Action</span>
+              <span class="genre-chip" onclick="toggleGenre(this,'Aventure')">Aventure</span>
+              <span class="genre-chip" onclick="toggleGenre(this,'Comédie')">Comédie</span>
+              <span class="genre-chip" onclick="toggleGenre(this,'Drame')">Drame</span>
+              <span class="genre-chip" onclick="toggleGenre(this,'Fantaisie')">Fantaisie</span>
+              <span class="genre-chip" onclick="toggleGenre(this,'Horreur')">Horreur</span>
+              <span class="genre-chip" onclick="toggleGenre(this,'Romance')">Romance</span>
+              <span class="genre-chip" onclick="toggleGenre(this,'Sci-Fi')">Sci-Fi</span>
+              <span class="genre-chip" onclick="toggleGenre(this,'Thriller')">Thriller</span>
+              <span class="genre-chip" onclick="toggleGenre(this,'Policier')">Policier</span>
+              <span class="genre-chip" onclick="toggleGenre(this,'Documentaire')">Documentaire</span>
+              <span class="genre-chip" onclick="toggleGenre(this,'Animation')">Animation</span>
+            </div>
+          </div>
+ 
+          <div class="form-section">
+            <div class="form-section-title">Médias</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Affiche (Poster)</label>
+                <div class="upload-zone" onclick="this.nextElementSibling.click()">
+                  <div class="upload-icon">🖼</div>
+                  <p class="upload-text">Cliquer pour uploader</p>
+                  <p class="upload-hint">JPG, PNG · Ratio 2:3</p>
+                </div>
+                <input type="file" accept="image/*" style="display:none" onchange="previewImage(this,'f-poster-preview')">
+                <img id="f-poster-preview" style="display:none;width:90px;margin-top:0.5rem;border-radius:4px" alt="">
+                <div class="form-group" style="margin-top:0.5rem">
+                  <label class="form-label" style="font-size:0.67rem">Ou URL de l'image</label>
+                  <input type="text" class="form-input" id="f-poster" placeholder="https://..." style="font-size:0.79rem">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Bannière</label>
+                <div class="upload-zone" onclick="this.nextElementSibling.click()">
+                  <div class="upload-icon">🏞</div>
+                  <p class="upload-text">Cliquer pour uploader</p>
+                  <p class="upload-hint">JPG, PNG · Ratio 16:9</p>
+                </div>
+                <input type="file" accept="image/*" style="display:none" onchange="previewImage(this,'f-banner-preview')">
+                <img id="f-banner-preview" style="display:none;width:100%;margin-top:0.5rem;border-radius:4px" alt="">
+              </div>
+              <div class="form-group">
+                <label class="form-label">URL Vidéo</label>
+                <input type="text" class="form-input" id="f-video" placeholder="https://... (MP4, HLS, embed)">
+                <p class="form-hint">MP4 direct, HLS/DASH, ou embed YouTube/Vimeo</p>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Bande-annonce</label>
+                <input type="text" class="form-input" id="f-trailer" placeholder="https://youtube.com/...">
+              </div>
+            </div>
+          </div>
+ 
+          <div class="form-section" id="episodes-section" style="display:none">
+            <div class="form-section-title">Épisodes par saison</div>
+            <div id="seasons-episodes-container"></div>
+            <button class="btn-outline" style="font-size:0.78rem;padding:0.38rem 0.9rem;margin-top:0.4rem" onclick="addSeason()">+ Ajouter une saison</button>
+          </div>
+ 
+          <div class="form-actions">
+            <button class="btn-cancel" onclick="resetForm()">Réinitialiser</button>
+            <button class="btn-save-draft" onclick="saveContent('Brouillon')">Enregistrer brouillon</button>
+            <button class="btn-save" onclick="saveContent('Actif')">✓ Publier</button>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- Users -->
+      <div id="admin-users" class="admin-page">
+        <div class="page-header"><div><div class="page-title">Utilisateurs</div><div class="page-subtitle">Gestion des comptes</div></div></div>
+        <div class="admin-table-wrap">
+          <table><thead><tr><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>Inscription</th><th>Statut</th></tr></thead>
+          <tbody>
+            <tr><td><div style="display:flex;align-items:center;gap:0.6rem"><div class="avatar" style="width:28px;height:28px;font-size:0.65rem">AB</div>Admin</div></td><td style="color:var(--muted)">admin@netstreaming.fr</td><td><span class="table-type-badge type-film">Admin</span></td><td style="color:var(--muted)">01/01/2024</td><td><span class="badge-active">Actif</span></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:0.6rem"><div class="avatar" style="width:28px;height:28px;font-size:0.65rem">ML</div>Marie L.</div></td><td style="color:var(--muted)">marie@example.com</td><td><span class="badge-draft table-type-badge" style="border:none">Abonné</span></td><td style="color:var(--muted)">15/03/2024</td><td><span class="badge-active">Actif</span></td></tr>
+          </tbody></table>
+        </div>
+      </div>
+ 
+      <!-- Settings -->
+      <div id="admin-settings" class="admin-page">
+        <div class="page-header"><div><div class="page-title">Paramètres</div><div class="page-subtitle">Configuration de la plateforme</div></div></div>
+        <div style="background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:1.75rem">
+          <div class="form-section">
+            <div class="form-section-title">Informations du site</div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label">Nom</label><input class="form-input" value="Net Streaming"></div>
+              <div class="form-group"><label class="form-label">Slogan</label><input class="form-input" value="Le cinéma sans limite"></div>
+              <div class="form-group"><label class="form-label">Clé secrète admin</label><input class="form-input" value="nitro06" type="password"></div>
+              <div class="form-group"><label class="form-label">Email contact</label><input class="form-input" placeholder="contact@netstreaming.fr"></div>
+            </div>
+          </div>
+          <div class="form-actions"><button class="btn-save" onclick="showToast('Paramètres sauvegardés !','✓',true)">Sauvegarder</button></div>
+        </div>
+      </div>
+ 
+    </main>
+  </div>
+</div>
+ 
+<!-- Player Modal -->
+<div class="modal-overlay" id="playerModal" onclick="if(event.target===this)closePlayer()">
+  <div class="player-modal">
+    <div class="player-title-bar">
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#fff" id="modal-title">Titre</div>
+        <div style="font-size:0.74rem;color:var(--muted);margin-top:2px" id="modal-sub">Film · Net Streaming</div>
+      </div>
+      <button class="close-modal" onclick="closePlayer()">✕</button>
+    </div>
+    <div class="player-screen">
+      <div class="player-screen-bg"></div>
+      <div class="player-screen-lines"></div>
+      <div class="player-center">
+        <div class="player-play-icon" onclick="togglePlay()">
+          <svg viewBox="0 0 24 24" id="play-svg"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <div class="player-movie-title" id="player-movie-title">—</div>
+        <div class="player-hint">Connectez votre source vidéo pour la lecture</div>
+      </div>
+    </div>
+    <div class="player-controls">
+      <div class="player-progress-bar"><div class="player-progress-fill" id="progress-fill"></div></div>
+      <div class="player-ctrl-row">
+        <div class="player-ctrl-left">
+          <button class="ctrl-btn">⏮</button>
+          <button class="ctrl-btn active" id="main-play-btn" onclick="togglePlay()">⏸</button>
+          <button class="ctrl-btn">⏭</button>
+          <span class="player-time" id="player-time">00:35 / 02:18</span>
+        </div>
+        <div class="player-ctrl-right">
+          <button class="ctrl-btn">CC</button>
+          <button class="ctrl-btn">🔊</button>
+          <button class="ctrl-btn">⛶</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- Toast -->
+<div class="toast" id="toast">
+  <span id="toast-icon">✓</span>
+  <span id="toast-msg">Succès</span>
+</div>
+ 
+<script>
+// ===== DATA =====
+let catalog = [
+  {id:0,title:'Le Dernier Horizon',type:'Film',year:2024,rating:8.7,duration:'2h 18min',genres:['Sci-Fi','Aventure'],director:'A. Moreau',cast:'J. Dupont, M. Chen',language:'Français',desc:"Dans un futur proche, une équipe d'explorateurs traverse une fissure spatio-temporelle pour sauver l'humanité d'une extinction imminente. Un chef-d'œuvre épique.",status:'Actif',isNew:false,poster:'',date:'15/01/2024'},
+  {id:1,title:'Minuit à Paris',type:'Film',year:2023,rating:7.9,duration:'1h 52min',genres:['Drame','Romance'],director:'C. Lambert',cast:'S. Moreau, P. Martin',language:'Français',desc:"Une histoire d'amour bouleversante dans les rues lumineuses de Paris.",status:'Actif',isNew:true,poster:'',date:'10/02/2024'},
+  {id:2,title:'Dark Matter',type:'Série',year:2023,rating:9.1,duration:'',genres:['Sci-Fi','Thriller'],director:'J. Blake',cast:'J. Adams, A. Cole',language:'Anglais',desc:"Un physicien disparaît et se retrouve dans une réalité parallèle. Une série haletante sur le multivers.",status:'Actif',isNew:false,seasons:2,poster:'',date:'28/01/2024'},
+  {id:3,title:'La Résistance',type:'Série',year:2024,rating:8.3,duration:'',genres:['Drame','Action','Policier'],director:'N. Blanc',cast:'F. Garcia, L. Petit',language:'Français',desc:"Dans une France occupée, un groupe de résistants risque tout pour libérer leur pays.",status:'Actif',isNew:true,seasons:1,poster:'',date:'05/03/2024'},
+  {id:4,title:'Échos du Vide',type:'Film',year:2024,rating:7.5,duration:'1h 45min',genres:['Horreur','Thriller'],director:'M. Rousseau',cast:'A. Bernard, C. Thomas',language:'Français',desc:"Une famille emménage dans une vieille demeure et découvre des secrets terrifiants.",status:'Actif',isNew:true,poster:'',date:'20/03/2024'},
+  {id:5,title:'Soleil de Minuit',type:'Film',year:2023,rating:8.0,duration:'2h 05min',genres:['Drame','Action'],director:'K. Tanaka',cast:'H. Kimura, Y. Sato',language:'Japonais',desc:"Un samouraï solitaire doit affronter son passé pour protéger un village innocent.",status:'Actif',isNew:false,poster:'',date:'02/01/2024'},
+  {id:6,title:"L'Empire du Rire",type:'Série',year:2023,rating:7.2,duration:'',genres:['Comédie'],director:'B. Dupuis',cast:'M. Leroy, C. Dubois',language:'Français',desc:"Les aventures hilarantes d'une famille recomposée dans une maison trop petite.",status:'Brouillon',isNew:false,seasons:3,poster:'',date:'01/12/2023'},
+  {id:7,title:'Quantum',type:'Film',year:2024,rating:8.9,duration:'2h 35min',genres:['Action','Sci-Fi'],director:'R. Scott',cast:'T. Hardy, Z. Kravitz',language:'Anglais',desc:"Un agent secret découvre que ses missions sont liées à une expérience secrète sur la manipulation du temps.",status:'Actif',isNew:true,poster:'',date:'01/04/2024'},
+];
+let nextId=catalog.length,selectedGenres=[],editingId=null,isPlaying=true,adminTableFilter='Tous',currentFilter='Tous';
+let progressVal=35;
+ 
+const EMOJIS={'Sci-Fi':'🚀','Action':'⚔️','Drame':'🎭','Thriller':'🔍','Horreur':'👁️','Comédie':'😂','Romance':'❤️','Animation':'✨','Documentaire':'📽️','Aventure':'🌍','Policier':'🕵️','Fantaisie':'🔮'};
+ 
+// ===== SECRET ACCESS =====
+let searchBuffer='';
+function checkSecret(e){
+  searchBuffer+=e.key;
+  if(searchBuffer.length>10)searchBuffer=searchBuffer.slice(-10);
+  if(searchBuffer.includes('nitro06')){
+    searchBuffer='';
+    document.getElementById('searchInput').value='';
+    showView('admin');
+  }
+}
+ 
+// ===== VIEWS =====
+function showView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  window.scrollTo(0,0);
+  document.getElementById('main-nav').style.display=v==='admin'?'none':'flex';
+  if(v==='home')renderHomeGrids();
+  if(v==='admin'){renderAdminDashboard();renderAdminTable();}
+}
+function filterCategory(type){showView('home');setFilter(type,null);}
+ 
+// ===== HOME =====
+function renderHomeGrids(){
+  const filtered=currentFilter==='Tous'?catalog:catalog.filter(m=>m.type===currentFilter||m.genres.includes(currentFilter));
+  const act=filtered.filter(m=>m.status==='Actif');
+  document.getElementById('trending-grid').innerHTML=act.slice(0,6).map(m=>cardHTML(m)).join('');
+  const n=act.filter(m=>m.isNew);
+  document.getElementById('new-grid').innerHTML=n.length?n.map(m=>cardHTML(m)).join(''):'<p style="color:var(--muted);font-size:0.85rem;grid-column:1/-1">Aucun résultat.</p>';
+  document.getElementById('series-grid').innerHTML=act.filter(m=>m.type==='Série').map(m=>cardHTML(m)).join('');
+}
+ 
+function cardHTML(m){
+  const emoji=EMOJIS[m.genres[0]]||'🎬';
+  const badge=m.isNew?'<div class="card-badge new">Nouveau</div>':m.type==='Série'?'<div class="card-badge serie">Série</div>':'<div class="card-badge">Film</div>';
+  const img=m.poster?`<img class="card-poster" src="${m.poster}" alt="${m.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="card-poster-placeholder" style="display:none"><span class="card-poster-icon">${emoji}</span></div>`:`<div class="card-poster-placeholder"><span class="card-poster-icon">${emoji}</span></div>`;
+  return `<div class="card" onclick="showDetail(${m.id})">${img}${badge}
+    <div class="card-overlay"><button class="card-play-btn" onclick="event.stopPropagation();openPlayer('${m.title.replace(/'/g,"\\'")}')"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></button></div>
+    <div class="card-info"><div class="card-title">${m.title}</div><div class="card-sub">${m.year} · ${m.type}</div><div class="card-rating">★ ${m.rating}</div></div>
+  </div>`;
+}
+ 
+function setFilter(f,el){
+  currentFilter=f;
+  if(el){document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
+  else document.querySelectorAll('.filter-tab')[0].classList.add('active');
+  renderHomeGrids();
+}
+ 
+function handleSearch(v){
+  if(!v){currentFilter='Tous';renderHomeGrids();return;}
+  const q=v.toLowerCase();
+  const res=catalog.filter(m=>m.title.toLowerCase().includes(q)||m.genres.some(g=>g.toLowerCase().includes(q))||m.director.toLowerCase().includes(q));
+  document.getElementById('trending-grid').innerHTML=res.length?res.map(m=>cardHTML(m)).join(''):`<p style="color:var(--muted);font-size:0.85rem;grid-column:1/-1">Aucun résultat pour "${v}"</p>`;
+  document.getElementById('new-grid').innerHTML='';
+  document.getElementById('series-grid').innerHTML='';
+}
+ 
+// ===== DETAIL =====
+function showDetail(id){
+  const m=catalog.find(x=>x.id===id);if(!m)return;
+  document.getElementById('detail-badge').innerHTML=`<span class="hero-eyebrow-dot"></span>${m.type} · ${m.year}`;
+  document.getElementById('detail-title').textContent=m.title;
+  document.getElementById('detail-desc').textContent=m.desc;
+  document.getElementById('detail-meta').innerHTML=`<div class="hero-rating">★ <strong>${m.rating}</strong></div><div class="hero-dot"></div><span class="hero-year">${m.year}</span>${m.duration?`<div class="hero-dot"></div><span class="hero-duration">${m.duration}</span>`:''}<div class="hero-dot"></div><span class="hero-genre">${m.genres.join(' · ')}</span>`;
+  document.getElementById('detail-genres').innerHTML=m.genres.map(g=>`<span class="tag">${g}</span>`).join('');
+  document.getElementById('detail-play-btn').onclick=()=>openPlayer(m.title);
+  const info=document.getElementById('detail-info-block');
+  info.innerHTML=`${m.director?`<div class="detail-info-row"><span class="lbl">Réalisateur</span><span>${m.director}</span></div>`:''}<div class="detail-info-row"><span class="lbl">Langue</span><span>${m.language||'N/A'}</span></div><div class="detail-info-row"><span class="lbl">Type</span><span>${m.type}</span></div>${m.seasons?`<div class="detail-info-row"><span class="lbl">Saisons</span><span>${m.seasons}</span></div>`:''}<div class="detail-info-row"><span class="lbl">Statut</span><span class="${m.status==='Actif'?'badge-active':'badge-draft'}">${m.status}</span></div>`;
+  const epSec=document.getElementById('detail-episodes-section');
+  if(m.type==='Série'){
+    epSec.style.display='block';
+    document.getElementById('detail-seasons').innerHTML=Array.from({length:m.seasons||1},(_,i)=>`<div class="season-tab${i===0?' active':''}" onclick="selectSeason(this,${m.id},${i+1})">Saison ${i+1}</div>`).join('');
+    renderEpisodes(m.id,1);
+  }else{epSec.style.display='none';}
+  showView('detail');
+}
+ 
+function selectSeason(el,id,s){document.querySelectorAll('.season-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderEpisodes(id,s);}
+function renderEpisodes(id,s){
+  const eps=[{n:1,t:'Le Commencement',d:'Tout commence ici.',dur:'45min'},{n:2,t:'La Découverte',d:'Une découverte bouleverse tout.',dur:'52min'},{n:3,t:"L'Alliance",d:'Unis malgré leurs différences.',dur:'48min'},{n:4,t:'Le Retournement',d:'Un épisode explosif et inattendu.',dur:'55min'}];
+  document.getElementById('detail-episodes').innerHTML=eps.map(e=>`<div class="episode-item" onclick="openPlayer('S${s}E${e.n} · ${e.t}')"><div class="ep-num">E${e.n}</div><div class="ep-thumb">▶</div><div class="ep-info"><div class="ep-title">${e.t}</div><div class="ep-desc">${e.d}</div></div><div class="ep-duration">${e.dur}</div></div>`).join('');
+}
+ 
+// ===== PLAYER =====
+function openPlayer(title){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('player-movie-title').textContent=title;
+  document.getElementById('playerModal').classList.add('open');
+  document.body.style.overflow='hidden';
+  isPlaying=true;document.getElementById('main-play-btn').textContent='⏸';
+  startProgress();
+}
+function closePlayer(){document.getElementById('playerModal').classList.remove('open');document.body.style.overflow='';clearInterval(window._pi);}
+function togglePlay(){
+  isPlaying=!isPlaying;
+  document.getElementById('main-play-btn').textContent=isPlaying?'⏸':'▶';
+  isPlaying?startProgress():clearInterval(window._pi);
+}
+function startProgress(){
+  clearInterval(window._pi);
+  window._pi=setInterval(()=>{if(progressVal<100){progressVal+=0.04;document.getElementById('progress-fill').style.width=progressVal+'%';}else clearInterval(window._pi);},100);
+}
+ 
+// ===== ADMIN =====
+function renderAdminDashboard(){
+  const total=catalog.length,films=catalog.filter(m=>m.type==='Film').length,series=catalog.filter(m=>m.type==='Série').length,pub=catalog.filter(m=>m.status==='Actif').length;
+  const s=document.getElementById('dashboard-stats');
+  if(s)s.innerHTML=`<div class="stat-card"><div class="stat-number">${total}</div><div class="stat-label">Total contenus</div></div><div class="stat-card"><div class="stat-number">${films}</div><div class="stat-label">Films</div></div><div class="stat-card"><div class="stat-number">${series}</div><div class="stat-label">Séries</div></div><div class="stat-card"><div class="stat-number">${pub}</div><div class="stat-label">Publiés</div></div>`;
+  const tb=document.getElementById('dashboard-tbody');
+  if(tb)tb.innerHTML=catalog.slice().reverse().slice(0,5).map(m=>rowHTML(m,true)).join('');
+}
+ 
+function rowHTML(m,simple=false){
+  const emoji=EMOJIS[m.genres[0]]||'🎬';
+  const acts=simple?'':`<td><div class="action-btns"><button class="btn-icon" onclick="editContent(${m.id})" title="Modifier"><svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="btn-icon danger" onclick="deleteContent(${m.id})" title="Supprimer"><svg viewBox="0 0 24 24" stroke-width="1.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></div></td>`;
+  return `<tr><td><div class="table-title-cell"><div class="table-thumb">${emoji}</div><div><div style="font-weight:500;color:#fff">${m.title}</div><div style="font-size:0.7rem;color:var(--muted)">${m.director||'—'}</div></div></div></td><td><span class="table-type-badge ${m.type==='Film'?'type-film':'type-serie'}">${m.type}</span></td>${simple?`<td style="color:var(--muted)">${m.genres.slice(0,2).join(', ')}</td>`:`<td style="color:var(--muted)">${m.year}</td><td style="color:var(--muted)">${m.genres.slice(0,2).join(', ')}</td><td style="color:rgba(255,255,255,0.7)">★ ${m.rating}</td>`}<td><span class="${m.status==='Actif'?'badge-active':'badge-draft'}">${m.status==='Actif'?'Publié':'Brouillon'}</span></td><td style="color:var(--muted)">${m.date||'—'}</td>${acts}</tr>`;
+}
+ 
+function renderAdminTable(filter='Tous',search=''){
+  let data=catalog;
+  if(filter==='Film'||filter==='Série')data=data.filter(m=>m.type===filter);
+  else if(filter==='Actif'||filter==='Brouillon')data=data.filter(m=>m.status===filter);
+  if(search)data=data.filter(m=>m.title.toLowerCase().includes(search.toLowerCase())||m.director.toLowerCase().includes(search.toLowerCase()));
+  const tb=document.getElementById('admin-tbody');if(tb)tb.innerHTML=data.map(m=>rowHTML(m,false)).join('');
+  const cl=document.getElementById('content-count-label');if(cl)cl.textContent=`${data.length} contenu${data.length>1?'s':''} au total`;
+  const tc=document.getElementById('table-count');if(tc)tc.textContent=`${data.length} résultat${data.length>1?'s':''}`;
+}
+ 
+function filterAdminTable(f,el){adminTableFilter=f;document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active'));if(el)el.classList.add('active');renderAdminTable(f,document.getElementById('admin-search')?.value||'');}
+function adminSearch(v){renderAdminTable(adminTableFilter,v);}
+function deleteContent(id){if(!confirm('Supprimer ce contenu ?'))return;catalog=catalog.filter(m=>m.id!==id);renderAdminTable(adminTableFilter);renderAdminDashboard();showToast('Contenu supprimé.','✕',false);}
+ 
+function editContent(id){
+  const m=catalog.find(x=>x.id===id);if(!m)return;
+  editingId=id;
+  document.getElementById('form-page-title').textContent='Modifier : '+m.title;
+  document.getElementById('form-breadcrumb-label').textContent='Modifier';
+  setContentType(m.type);
+  document.getElementById('f-title').value=m.title;
+  document.getElementById('f-desc').value=m.desc;
+  document.getElementById('f-year').value=m.year;
+  document.getElementById('f-rating').value=m.rating;
+  document.getElementById('f-duration').value=m.duration||'';
+  document.getElementById('f-director').value=m.director||'';
+  document.getElementById('f-cast').value=m.cast||'';
+  document.getElementById('f-status').value=m.status;
+  if(m.seasons)document.getElementById('f-seasons').value=m.seasons;
+  selectedGenres=[...m.genres];
+  document.querySelectorAll('.genre-chip').forEach(c=>c.classList.toggle('selected',selectedGenres.includes(c.textContent)));
+  showAdminPage('add-content',null);
+}
+ 
+function showAdminPage(page,el){
+  document.querySelectorAll('.admin-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('admin-'+page).classList.add('active');
+  document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
+  if(el)el.classList.add('active');
+  if(page==='add-content'&&!editingId){document.getElementById('form-page-title').textContent='Nouveau contenu';document.getElementById('form-breadcrumb-label').textContent='Ajouter';}
+}
+ 
+function setContentType(type){
+  document.getElementById('f-type').value=type;
+  document.getElementById('type-film-btn').classList.toggle('active',type==='Film');
+  document.getElementById('type-serie-btn').classList.toggle('active',type==='Série');
+  document.getElementById('f-duration-group').style.display=type==='Film'?'flex':'none';
+  document.getElementById('f-seasons-group').style.display=type==='Série'?'flex':'none';
+  document.getElementById('episodes-section').style.display=type==='Série'?'block':'none';
+  if(type==='Série')updateSeasonsUI();
+}
+ 
+function toggleGenre(el,genre){
+  el.classList.toggle('selected');
+  if(el.classList.contains('selected')){if(!selectedGenres.includes(genre))selectedGenres.push(genre);}
+  else{selectedGenres=selectedGenres.filter(g=>g!==genre);}
+}
+ 
+function updateSeasonsUI(){
+  const n=parseInt(document.getElementById('f-seasons').value)||1;
+  const c=document.getElementById('seasons-episodes-container');c.innerHTML='';
+  for(let s=1;s<=Math.min(n,5);s++){
+    c.innerHTML+=`<div class="season-episodes-block"><div class="season-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'"><strong style="font-size:0.83rem;color:#fff">Saison ${s}</strong><span style="font-size:0.72rem;color:var(--muted)">▼</span></div><div class="season-ep-list" id="season-${s}-eps">${[1,2,3,4].map(ep=>`<div class="ep-input-row"><span>${ep}</span><input class="form-input" placeholder="Titre épisode ${ep}" style="font-size:0.77rem;padding:0.38rem 0.65rem"><input class="form-input" placeholder="Durée" style="font-size:0.77rem;padding:0.38rem 0.65rem"><input class="form-input" placeholder="URL vidéo" style="font-size:0.77rem;padding:0.38rem 0.65rem"></div>`).join('')}<button class="btn-outline" style="font-size:0.74rem;padding:0.3rem 0.75rem;margin-top:0.35rem" onclick="addEpisode(${s})">+ Épisode</button></div></div>`;
+  }
+}
+ 
+function addEpisode(s){const c=document.getElementById(`season-${s}-eps`);const n=c.querySelectorAll('.ep-input-row').length+1;const d=document.createElement('div');d.className='ep-input-row';d.innerHTML=`<span>${n}</span><input class="form-input" placeholder="Titre épisode ${n}" style="font-size:0.77rem;padding:0.38rem 0.65rem"><input class="form-input" placeholder="Durée" style="font-size:0.77rem;padding:0.38rem 0.65rem"><input class="form-input" placeholder="URL vidéo" style="font-size:0.77rem;padding:0.38rem 0.65rem">`;c.insertBefore(d,c.lastElementChild);}
+function addSeason(){const n=parseInt(document.getElementById('f-seasons').value)||1;document.getElementById('f-seasons').value=n+1;updateSeasonsUI();}
+ 
+function saveContent(status){
+  const title=document.getElementById('f-title').value.trim();
+  if(!title){showToast('Le titre est obligatoire.','⚠',false);return;}
+  const type=document.getElementById('f-type').value;
+  const obj={title,type,year:parseInt(document.getElementById('f-year').value)||2024,rating:parseFloat(document.getElementById('f-rating').value)||7.0,desc:document.getElementById('f-desc').value.trim(),duration:document.getElementById('f-duration').value.trim(),director:document.getElementById('f-director').value.trim(),cast:document.getElementById('f-cast').value.trim(),language:document.getElementById('f-language').value,seasons:parseInt(document.getElementById('f-seasons').value)||1,poster:document.getElementById('f-poster').value.trim(),genres:selectedGenres.length?selectedGenres:['Drame'],status};
+  if(editingId!==null){const i=catalog.findIndex(m=>m.id===editingId);if(i>-1)catalog[i]={...catalog[i],...obj};showToast(`"${title}" mis à jour !`,'✓',true);}
+  else{catalog.unshift({id:nextId++,...obj,isNew:true,date:new Date().toLocaleDateString('fr-FR')});showToast(`"${title}" ${status==='Actif'?'publié':'sauvegardé'} !`,'✓',true);}
+  editingId=null;
+  renderHomeGrids();renderAdminDashboard();renderAdminTable();resetForm();
+  showAdminPage('films',null);
+}
+ 
+function resetForm(){
+  document.querySelectorAll('#content-form input:not([type=hidden]),#content-form textarea').forEach(el=>el.value='');
+  document.getElementById('f-language').selectedIndex=0;document.getElementById('f-status').selectedIndex=0;
+  selectedGenres=[];editingId=null;
+  document.querySelectorAll('.genre-chip').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('f-poster-preview').style.display='none';
+  setContentType('Film');
+  document.getElementById('form-page-title').textContent='Nouveau contenu';
+  document.getElementById('form-breadcrumb-label').textContent='Ajouter';
+}
+ 
+function previewImage(input,id){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{const img=document.getElementById(id);img.src=e.target.result;img.style.display='block';};r.readAsDataURL(f);}
+ 
+function showToast(msg,icon='✓',ok=true){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  document.getElementById('toast-icon').textContent=icon;
+  t.className='toast '+(ok?'success':'error')+' show';
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+ 
+// Init
+renderHomeGrids();
+window.addEventListener('scroll',()=>document.getElementById('main-nav').classList.toggle('scrolled',window.scrollY>80));
+</script>
+</body>
+</html>
