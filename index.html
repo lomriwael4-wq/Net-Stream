@@ -770,6 +770,13 @@ function checkSecret(e){
     searchBuffer='';
     document.getElementById('searchInput').value='';
     showView('admin');
+    return false;
+  }
+  // Redirection aussi si on tape le mot complet rapidement
+  if(e.key === 'Enter' && document.getElementById('searchInput').value === 'nitro06') {
+    document.getElementById('searchInput').value='';
+    showView('admin');
+    e.preventDefault();
   }
 }
  
