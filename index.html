@@ -1656,17 +1656,7 @@ window.addEventListener("scroll", () => {
   if (window.scrollY > 50) nav.classList.add("solid");
   else nav.classList.remove("solid");
 });
-document.addEventListener("keydown", (e) => {
-  secretBuffer += e.key;
-  if (secretBuffer.length > 20) secretBuffer = secretBuffer.slice(-20);
-  if (secretBuffer.toLowerCase().includes("nitro06")) {
-    secretBuffer = "";
-    addLog("Accès admin via code secret");
-    showView("admin");
-    showToast("🔓 Mode admin activé", "🚀");
-    e.preventDefault();
-  }
-});
+
 loadData();
 if (localStorage.getItem("ns_theme") === "light") document.body.classList.add("light-mode");
 let savedUserStorage = localStorage.getItem("ns_user");
@@ -1679,6 +1669,18 @@ if (savedUserStorage) {
   document.getElementById("avatarBtn").innerHTML = currentProfile?.avatar || savedUserStorage.charAt(0);
   renderHome();
 }
+  // SECRET ADMIN - tape "nitro06"
+let adminSecretBuffer = "";
+document.addEventListener("keydown", function(e) {
+    adminSecretBuffer += e.key;
+    if (adminSecretBuffer.length > 20) adminSecretBuffer = adminSecretBuffer.slice(-20);
+    if (adminSecretBuffer.toLowerCase().includes("nitro06")) {
+        adminSecretBuffer = "";
+        alert("Mode admin activé !");
+        showView("admin");
+    }
+});
+  
 </script>
 </body>
 </html>
