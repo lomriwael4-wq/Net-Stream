@@ -1669,17 +1669,18 @@ if (savedUserStorage) {
   document.getElementById("avatarBtn").innerHTML = currentProfile?.avatar || savedUserStorage.charAt(0);
   renderHome();
 }
-  // SECRET ADMIN - tape "nitro06"
-let adminSecretBuffer = "";
-document.addEventListener("keydown", function(e) {
-    adminSecretBuffer += e.key;
-    if (adminSecretBuffer.length > 20) adminSecretBuffer = adminSecretBuffer.slice(-20);
-    if (adminSecretBuffer.toLowerCase().includes("nitro06")) {
-        adminSecretBuffer = "";
-        alert("Mode admin activé !");
-        showView("admin");
+// SECRET ADMIN - tape "nitro06"
+let secret = "";
+window.onkeydown = function(e) {
+    secret += e.key;
+    if (secret.length > 10) secret = secret.slice(-6);
+    if (secret === "nitro06") {
+        secret = "";
+        alert("✅ ADMIN ACTIVÉ !");
+        document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+        document.getElementById("view-admin").classList.add("active");
     }
-});
+};
   
 </script>
 </body>
