@@ -2,480 +2,528 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Net Streaming</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Net%20Streaming%22,%22short_name%22:%22NetStream%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%230a0a0a%22,%22theme_color%22:%22%23e50914%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20100%20100%27%3E%3Crect%20fill%3D%27%23e50914%27%20width%3D%27100%27%20height%3D%27100%27%2F%3E%3Ctext%20x%3D%2750%27%20y%3D%2767%27%20text-anchor%3D%27middle%27%20fill%3D%27white%27%20font-size%3D%2750%27%20font-weight%3D%27bold%27%20font-family%3D%27Arial%27%3ENS%3C%2Ftext%3E%3C%2Fsvg%3E%22,%22sizes%22:%22100x100%22%2C%22type%22:%22image%2Fsvg+xml%22%2C%22purpose%22:%22any%22%7D]}" />
+<title>Net Streaming - Plateforme Illimitée</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
   --bg:#0a0a0a;
-  --bg2:#111;
+  --bg2:#111111;
   --bg3:#1a1a1a;
-  --bg4:#222;
-  --white:#fff;
+  --bg4:#222222;
+  --glass:rgba(255,255,255,0.05);
+  --glass2:rgba(255,255,255,0.1);
+  --white:#ffffff;
   --white80:rgba(255,255,255,0.8);
   --white50:rgba(255,255,255,0.5);
   --white20:rgba(255,255,255,0.2);
   --white10:rgba(255,255,255,0.1);
   --white06:rgba(255,255,255,0.06);
   --white03:rgba(255,255,255,0.03);
-  --border:rgba(255,255,255,0.1);
-  --border2:rgba(255,255,255,0.2);
+  --border:rgba(255,255,255,0.08);
+  --border2:rgba(255,255,255,0.15);
   --red:#e50914;
+  --red2:#b81d24;
+  --blue:#0078d4;
+  --green:#2ecc71;
+  --yellow:#f1c40f;
+  --purple:#9b59b6;
+  --transition:all 0.25s cubic-bezier(0.4,0,0.2,1);
+  --shadow-sm:0 4px 12px rgba(0,0,0,0.3);
+  --shadow-lg:0 20px 40px rgba(0,0,0,0.4);
+  --shadow-xl:0 25px 50px rgba(0,0,0,0.5);
 }
 body.light-mode{
-  --bg:#f5f5f5;
+  --bg:#f0f2f5;
   --bg2:#ffffff;
-  --bg3:#f0f0f0;
-  --bg4:#e5e5e5;
-  --white:#111;
+  --bg3:#f8f9fa;
+  --bg4:#e9ecef;
+  --glass:rgba(0,0,0,0.03);
+  --glass2:rgba(0,0,0,0.05);
+  --white:#111111;
   --white80:rgba(0,0,0,0.8);
   --white50:rgba(0,0,0,0.5);
   --white20:rgba(0,0,0,0.2);
   --white10:rgba(0,0,0,0.1);
-  --border:rgba(0,0,0,0.1);
+  --border:rgba(0,0,0,0.08);
 }
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
-a{text-decoration:none;color:inherit}
-button{font-family:'DM Sans',sans-serif;cursor:pointer;border:none;background:none}
-input,select,textarea{font-family:'DM Sans',sans-serif}
-::-webkit-scrollbar{width:4px;height:4px}
+body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;transition:background 0.3s}
+::selection{background:var(--red);color:white}
+::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
-.view{display:none;min-height:100vh}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--white20)}
+.view{display:none;min-height:100vh;animation:fadeIn 0.3s ease}
 .view.active{display:block}
-#topnav{position:fixed;top:0;left:0;right:0;z-index:300;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 4%;transition:background .4s}
-#topnav.solid{background:var(--bg)}
-.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.08em;color:var(--white);cursor:pointer}
-.nav-links{display:flex;gap:1.8rem;list-style:none}
-.nav-links a{font-size:.82rem;letter-spacing:.06em;color:var(--white50);transition:color .2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+@keyframes shimmer{0%{background-position:-1000px 0}100%{background-position:1000px 0}}
+/* NAVIGATION */
+#topnav{position:fixed;top:0;left:0;right:0;z-index:300;height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 4%;transition:all 0.4s;background:linear-gradient(to bottom,rgba(0,0,0,0.7),transparent)}
+#topnav.solid{background:var(--bg2);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:.08em;background:linear-gradient(135deg,#fff 0%,var(--red) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;cursor:pointer;transition:transform 0.2s}
+.nav-logo:hover{transform:scale(1.02)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:.85rem;font-weight:500;letter-spacing:.04em;color:var(--white50);transition:all 0.2s;padding:0.5rem 0;position:relative}
 .nav-links a:hover,.nav-links a.on{color:var(--white)}
-.nav-right{display:flex;align-items:center;gap:.8rem}
-.nav-search-wrap{position:relative;display:flex;align-items:center}
-#searchInput{background:var(--white06);border:1px solid var(--border);color:var(--white);padding:.38rem .75rem .38rem 2rem;border-radius:4px;font-size:.8rem;width:180px;transition:all .2s}
-#searchInput:focus{outline:none;border-color:var(--white20);background:var(--bg3);width:220px}
-.nav-avatar{width:32px;height:32px;border-radius:4px;background:var(--white);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:500;color:#000;cursor:pointer}
-.theme-toggle{margin-left:10px;cursor:pointer;font-size:1.1rem}
-.hero{position:relative;height:95vh;min-height:560px;overflow:hidden}
-.hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.45}
-.hero-grad-left{position:absolute;inset:0;background:linear-gradient(to right,rgba(6,6,6,.98) 30%,rgba(6,6,6,.6) 60%,transparent 100%)}
-.hero-grad-bot{position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to top,var(--bg),transparent)}
-.hero-content{position:absolute;bottom:14%;left:4%;max-width:600px}
-.hero-badge{display:inline-flex;align-items:center;gap:.5rem;border:1px solid var(--white20);border-radius:2px;padding:.25rem .7rem;font-size:.65rem;letter-spacing:.2em;margin-bottom:1.2rem}
-.hero-badge-dot{width:5px;height:5px;border-radius:50%;background:var(--white);animation:blink 2s infinite}
-.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,6vw,6.5rem);letter-spacing:.04em;line-height:.92;margin-bottom:1rem;color:var(--white)}
-.hero-meta{display:flex;align-items:center;gap:1rem;margin-bottom:.85rem;font-size:.78rem;color:var(--white50)}
-.hero-desc{font-size:.9rem;line-height:1.7;color:rgba(255,255,255,.55);font-weight:300;max-width:460px;margin-bottom:2rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.hero-btns{display:flex;gap:.75rem}
-.btn-primary{display:flex;align-items:center;gap:.55rem;background:var(--white);color:#000;padding:.8rem 2rem;border-radius:4px;font-size:.88rem;font-weight:500}
-.btn-secondary{display:flex;align-items:center;gap:.55rem;background:rgba(255,255,255,.12);color:var(--white);padding:.8rem 1.6rem;border-radius:4px;font-size:.88rem;border:1px solid var(--white20)}
+.nav-links a.on::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--red);border-radius:2px}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-search-wrap{position:relative}
+#searchInput{background:var(--glass);border:1px solid var(--border);color:var(--white);padding:.45rem .85rem .45rem 2.2rem;border-radius:30px;font-size:.8rem;width:200px;transition:all 0.3s;backdrop-filter:blur(10px)}
+#searchInput:focus{outline:none;border-color:var(--red);background:var(--bg3);width:250px}
+.nav-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red2));display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:600;color:white;cursor:pointer;transition:transform 0.2s}
+.nav-avatar:hover{transform:scale(1.05)}
+.profile-dropdown{position:absolute;top:70px;right:4%;background:var(--bg2);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:12px;padding:0.5rem 0;min-width:180px;opacity:0;visibility:hidden;transform:translateY(-10px);transition:all 0.2s;z-index:301}
+.profile-dropdown.show{opacity:1;visibility:visible;transform:translateY(0)}
+.profile-dropdown a{display:flex;align-items:center;gap:0.8rem;padding:0.7rem 1rem;color:var(--white80);font-size:.85rem;transition:background 0.2s}
+.profile-dropdown a:hover{background:var(--glass);color:var(--white)}
+/* HERO SECTION */
+.hero{position:relative;height:88vh;min-height:600px;overflow:hidden}
+.hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5;transform:scale(1.05);transition:transform 8s}
+.hero:hover .hero-img{transform:scale(1)}
+.hero-grad-left{position:absolute;inset:0;background:linear-gradient(97deg,rgba(6,6,6,0.95) 25%,rgba(6,6,6,0.6) 55%,transparent 85%)}
+.hero-grad-bot{position:absolute;bottom:0;left:0;right:0;height:40%;background:linear-gradient(to top,var(--bg),transparent)}
+.hero-content{position:absolute;bottom:20%;left:4%;max-width:580px;animation:slideUp 0.6s ease}
+.hero-badge{display:inline-flex;align-items:center;gap:.6rem;border:1px solid var(--white20);border-radius:30px;padding:.35rem 1rem;font-size:.7rem;letter-spacing:.15em;margin-bottom:1.2rem;backdrop-filter:blur(5px)}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.2)}}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.8rem,7vw,6.8rem);letter-spacing:.02em;line-height:.9;margin-bottom:1rem}
+.hero-meta{display:flex;align-items:center;gap:1.2rem;margin-bottom:.85rem;font-size:.8rem;color:var(--white50)}
+.hero-meta .match{color:var(--green);font-weight:600}
+.hero-desc{font-size:.9rem;line-height:1.7;color:var(--white80);font-weight:300;max-width:500px;margin-bottom:2rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.hero-btns{display:flex;gap:1rem}
+.btn-primary{display:flex;align-items:center;gap:.6rem;background:var(--white);color:#000;padding:.85rem 2.2rem;border-radius:40px;font-size:.9rem;font-weight:600;transition:all 0.2s}
+.btn-primary:hover{background:#e0e0e0;transform:scale(1.02)}
+.btn-secondary{display:flex;align-items:center;gap:.6rem;background:var(--glass2);color:var(--white);padding:.85rem 1.8rem;border-radius:40px;font-size:.9rem;border:1px solid var(--white20);backdrop-filter:blur(10px);transition:all 0.2s}
+.btn-secondary:hover{background:var(--white20);transform:scale(1.02)}
+/* ROWS */
 .rows{padding:0 4% 3rem}
-.row{margin-bottom:2.8rem}
-.row-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
-.row-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.06em;color:var(--white)}
-.row-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.row{margin-bottom:2.5rem}
+.row-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.row-title{font-size:1.3rem;font-weight:600;letter-spacing:-0.01em}
+.row-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:12px;scrollbar-width:none;scroll-behavior:smooth}
 .row-scroll::-webkit-scrollbar{display:none}
-.card{flex:0 0 auto;width:160px;border-radius:4px;overflow:hidden;cursor:pointer;position:relative;transition:transform .25s;background:var(--bg3)}
-.card:hover{transform:scale(1.06) translateY(-4px);z-index:10}
+.card{flex:0 0 auto;width:170px;border-radius:8px;overflow:hidden;cursor:pointer;transition:transform 0.3s cubic-bezier(0.2,0,0,1),box-shadow 0.3s;background:var(--bg3);position:relative}
+.card:hover{transform:scale(1.05) translateY(-8px);box-shadow:var(--shadow-xl);z-index:10}
 .card-img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block}
-.card-info{position:absolute;bottom:0;left:0;right:0;padding:.6rem .65rem;background:linear-gradient(to top,rgba(0,0,0,.95),transparent);opacity:0;transition:opacity .22s}
+.card-info{position:absolute;bottom:0;left:0;right:0;padding:.8rem;background:linear-gradient(to top,rgba(0,0,0,0.95),transparent);opacity:0;transition:opacity 0.25s}
 .card:hover .card-info{opacity:1}
-.card-name{font-size:.78rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card-sub{font-size:.66rem;color:var(--white50)}
-.card-pill{position:absolute;top:7px;left:7px;font-size:.55rem;font-weight:600;padding:2px 7px;border-radius:2px}
-.pill-new{background:var(--red);color:#fff}
+.card-name{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-sub{font-size:.65rem;color:var(--white50);display:flex;align-items:center;gap:.5rem;margin-top:4px}
+.card-progress{position:absolute;bottom:0;left:0;height:3px;background:var(--red);width:0%;transition:width 0.3s}
+.card-pill{position:absolute;top:8px;left:8px;font-size:.55rem;font-weight:700;padding:3px 8px;border-radius:4px;background:var(--red);color:#fff;z-index:2}
+.card-watchlater{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.6);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;transition:all 0.2s}
+.card-watchlater:hover{background:var(--red);transform:scale(1.1)}
+.card-watchlater i{font-size:12px;color:white}
+/* CATEGORY PAGE */
 #view-category{padding-top:80px}
-.cat-hero{padding:1.5rem 4% 1rem;border-bottom:1px solid var(--border)}
-.cat-hero-title{font-family:'Bebas Neue',sans-serif;font-size:3rem}
-.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px;padding:1.5rem 4%}
-.detail-body{padding:0 4% 4rem}
-.detail-grid{display:grid;grid-template-columns:1fr 260px;gap:2.5rem;margin-top:2rem}
-.dinfo-box{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:1.1rem}
-.dinfo-row{display:flex;justify-content:space-between;font-size:.8rem;padding:.5rem 0;border-bottom:1px solid var(--border)}
-.modal-bg{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.95);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.cat-hero{padding:1rem 4% 1.5rem;border-bottom:1px solid var(--border)}
+.cat-hero-title{font-size:2.5rem;font-weight:700;background:linear-gradient(135deg,var(--white),var(--white50));-webkit-background-clip:text;background-clip:text;color:transparent}
+.cat-filter-bar{display:flex;gap:0.8rem;margin-top:1rem;flex-wrap:wrap}
+.cat-filter{background:var(--glass);border:1px solid var(--border);padding:0.4rem 1rem;border-radius:30px;font-size:.8rem;cursor:pointer;transition:all 0.2s}
+.cat-filter.active{background:var(--red);border-color:var(--red);color:white}
+.cat-filter:hover{background:var(--white20)}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:15px;padding:1.8rem 4%}
+/* MODALS */
+.modal-bg{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,0.96);display:none;align-items:center;justify-content:center;backdrop-filter:blur(20px)}
 .modal-bg.open{display:flex}
-.player-wrap{background:var(--bg2);border-radius:6px;width:94%;max-width:960px;overflow:hidden;border:1px solid var(--border)}
-.player-topbar{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.3rem;border-bottom:1px solid var(--border)}
+.player-wrap{background:var(--bg2);border-radius:16px;width:94%;max-width:1100px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-xl);animation:scaleIn 0.3s ease}
+.player-topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;background:var(--bg3)}
 .vid-container{position:relative;width:100%;aspect-ratio:16/9;background:#000}
 .vid-container video{width:100%;height:100%;display:block;object-fit:contain}
-.ctrl-bar{background:var(--bg3);padding:.55rem 1.2rem .7rem}
-#importModal{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center}
-#importModal.open{display:flex}
-.import-box{background:var(--bg2);border:1px solid var(--border);border-radius:8px;width:96%;max-width:820px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column}
-.import-head{padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
-.import-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:.5rem}
-.ir-card{border-radius:4px;overflow:hidden;cursor:pointer;background:var(--bg3);border:2px solid transparent}
-.ir-card.selected{border-color:var(--white)}
-.ir-card img{width:100%;aspect-ratio:2/3;object-fit:cover}
-.mass-btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
-.mass-btn{padding:.45rem .9rem;border-radius:4px;background:var(--bg4);border:1px solid var(--border);color:var(--white80);cursor:pointer}
-.mass-btn.active{background:var(--white);color:#000}
-#view-admin{background:var(--bg2);min-height:100vh}
-.adm-nav{height:60px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0}
-.adm-logo{font-family:'Bebas Neue',sans-serif;font-size:1.3rem}
-.adm-layout{display:grid;grid-template-columns:200px 1fr;min-height:calc(100vh - 60px)}
-.adm-side{background:var(--bg);border-right:1px solid var(--border);padding:1.2rem 0}
-.side-link{display:flex;align-items:center;gap:.6rem;padding:.6rem 1.1rem;font-size:.8rem;color:var(--white50);cursor:pointer}
-.side-link.on{color:var(--white);border-left:2px solid var(--white);background:var(--white06)}
-.adm-main{padding:1.8rem}
-.adm-page{display:none}
+.vid-controls{background:linear-gradient(to top,rgba(0,0,0,0.9),transparent);padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.speed-select{background:var(--bg4);border:1px solid var(--border);color:white;padding:0.3rem 0.8rem;border-radius:20px;font-size:.75rem;cursor:pointer}
+.progress-container{flex:1;height:4px;background:var(--white20);border-radius:2px;cursor:pointer}
+.progress-bar{height:100%;background:var(--red);width:0%;border-radius:2px;position:relative}
+/* DETAIL PAGE */
+.detail-body{padding:0 4% 4rem}
+.detail-grid{display:grid;grid-template-columns:1fr 320px;gap:2.5rem;margin-top:2rem}
+.detail-desc-text{font-size:1rem;line-height:1.7;color:var(--white80);margin-bottom:1.5rem}
+.dinfo-box{background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:1.2rem;backdrop-filter:blur(10px)}
+.dinfo-row{display:flex;justify-content:space-between;font-size:.85rem;padding:.7rem 0;border-bottom:1px solid var(--border)}
+.similar-scroll{display:flex;gap:12px;overflow-x:auto;margin-top:1rem}
+/* ADMIN PANEL */
+#view-admin{background:var(--bg2)}
+.adm-nav{height:65px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:100}
+.adm-layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 65px)}
+.adm-side{background:var(--bg);border-right:1px solid var(--border);padding:1.5rem 0}
+.side-link{display:flex;align-items:center;gap:.8rem;padding:.75rem 1.5rem;font-size:.85rem;color:var(--white50);cursor:pointer;transition:all 0.2s;margin:0 0.5rem;border-radius:10px}
+.side-link:hover{background:var(--glass);color:var(--white)}
+.side-link.on{background:linear-gradient(135deg,var(--red10),var(--glass));color:var(--white);border-left:3px solid var(--red)}
+.adm-main{padding:2rem}
+.adm-page{display:none;animation:fadeIn 0.3s}
 .adm-page.on{display:block}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem;margin-bottom:1.6rem}
-.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:1.1rem}
-.stat-n{font-family:'Bebas Neue',sans-serif;font-size:2.2rem}
-.table-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:5px;overflow:auto}
-table{width:100%;border-collapse:collapse;font-size:.8rem}
-th{background:var(--bg4);padding:.65rem 1rem;text-align:left;color:var(--white50)}
-td{padding:.72rem 1rem;border-bottom:1px solid rgba(255,255,255,.03)}
-.iBtn{background:none;border:1px solid var(--border);color:var(--white50);width:26px;height:26px;border-radius:3px;cursor:pointer}
-.iBtn.d:hover{color:var(--red)}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.fi,.fta{background:var(--bg4);border:1px solid var(--border);color:var(--white);padding:.58rem .85rem;border-radius:4px;width:100%}
-.gchips{display:flex;gap:.35rem;flex-wrap:wrap}
-.gchip{padding:.25rem .65rem;border-radius:20px;border:1px solid var(--border);font-size:.72rem;cursor:pointer}
-.gchip.on{background:var(--white10);color:var(--white)}
-.btn-save{background:var(--white);color:#000;padding:.55rem 1.5rem;border-radius:4px;cursor:pointer}
-.welcome-over{position:fixed;inset:0;z-index:1000;background:#000;display:flex;align-items:center;justify-content:center}
-.welcome-box{text-align:center;max-width:380px;padding:2rem}
-.welcome-logo{font-family:'Bebas Neue',sans-serif;font-size:3rem}
-.welcome-in{width:100%;padding:.8rem;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--white);margin-bottom:1rem;text-align:center}
-.toast{position:fixed;bottom:1.8rem;right:1.8rem;background:var(--bg3);border:1px solid var(--border2);border-radius:5px;padding:.8rem 1.1rem;z-index:900;transform:translateY(80px);opacity:0;transition:all .3s}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:linear-gradient(135deg,var(--bg3),var(--bg4));border-radius:16px;padding:1.2rem;border:1px solid var(--border)}
+.stat-n{font-size:2.2rem;font-weight:700}
+.table-wrap{background:var(--bg3);border-radius:16px;overflow:auto;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse}
+th{background:var(--bg4);padding:0.9rem 1rem;text-align:left;font-weight:600;color:var(--white80)}
+td{padding:0.8rem 1rem;border-bottom:1px solid var(--border)}
+.iBtn{background:var(--glass);border:1px solid var(--border);color:var(--white80);width:32px;height:32px;border-radius:8px;cursor:pointer;transition:all 0.2s;margin:0 4px}
+.iBtn:hover{background:var(--white20);color:var(--white)}
+.iBtn.d:hover{background:var(--red);color:white}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;margin-top:1rem}
+.fi,.fta{background:var(--bg4);border:1px solid var(--border);color:var(--white);padding:0.7rem 1rem;border-radius:12px;width:100%;transition:all 0.2s}
+.fi:focus,.fta:focus{outline:none;border-color:var(--red)}
+.gchips{display:flex;gap:0.5rem;flex-wrap:wrap;margin:1rem 0}
+.gchip{padding:0.4rem 1rem;border-radius:30px;border:1px solid var(--border);font-size:.75rem;cursor:pointer;transition:all 0.2s}
+.gchip.on{background:var(--red);border-color:var(--red);color:white}
+.btn-save{background:linear-gradient(135deg,var(--red),var(--red2));color:white;padding:0.6rem 1.8rem;border-radius:40px;cursor:pointer;font-weight:600;transition:transform 0.2s;border:none}
+.btn-save:hover{transform:scale(1.02)}
+/* PROFILE MODAL */
+.profile-modal{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,0.95);display:none;align-items:center;justify-content:center}
+.profile-modal.open{display:flex}
+.profile-container{background:var(--bg2);border-radius:20px;padding:2rem;max-width:500px;width:90%;border:1px solid var(--border)}
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--purple));margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:2rem;color:white}
+/* TOAST */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:0.8rem 1.2rem;z-index:900;transform:translateY(100px);opacity:0;transition:all 0.3s;display:flex;align-items:center;gap:0.8rem;backdrop-filter:blur(10px)}
 .toast.show{transform:translateY(0);opacity:1}
-.log-item{display:flex;align-items:center;gap:.8rem;padding:.7rem .9rem;border-bottom:1px solid var(--border);font-size:.79rem;flex-wrap:wrap}
-.log-ip{font-family:monospace;color:#81c784;font-size:.78rem}
-.log-time{font-size:.68rem;color:var(--white50);margin-left:auto}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-@media(max-width:900px){.adm-layout{grid-template-columns:1fr}.adm-side{display:none}.detail-grid{grid-template-columns:1fr}}
+/* CINEMA MODE */
+.cinema-mode #topnav,.cinema-mode .rows,.cinema-mode .hero-btns,.cinema-mode .hero-desc{opacity:0;transition:opacity 0.3s}
+.cinema-mode .hero-content{bottom:5%}
+/* MOBILE SWIPE */
+.swipe-indicator{display:none}
+@media(max-width:768px){
+  .nav-links{display:none}
+  .detail-grid{grid-template-columns:1fr}
+  .adm-layout{grid-template-columns:1fr}
+  .adm-side{display:none}
+  .hero-title{font-size:2.5rem}
+  .card{width:130px}
+  .swipe-indicator{display:flex;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--glass);padding:5px 12px;border-radius:20px;font-size:11px;z-index:100}
+}
+@media(max-width:480px){
+  .hero-content{bottom:12%}
+  .hero-btns .btn-primary,.hero-btns .btn-secondary{padding:0.6rem 1.2rem;font-size:0.75rem}
+}
 </style>
 </head>
 <body>
 
-<!-- WELCOME -->
-<div class="welcome-over" id="welcomeOver">
-  <div class="welcome-box">
-    <div class="welcome-logo">NET STREAMING</div>
-    <p class="welcome-sub">La plateforme de streaming à votre image</p>
-    <input class="welcome-in" id="welcomeName" placeholder="Votre pseudo..." maxlength="20">
-    <button class="btn-save" style="width:100%;padding:.75rem" onclick="initUser()">Commencer →</button>
+<!-- WELCOME SCREEN -->
+<div class="welcome-over" id="welcomeOver" style="position:fixed;inset:0;z-index:1000;background:#000;display:flex;align-items:center;justify-content:center">
+  <div class="welcome-box" style="text-align:center;max-width:400px;padding:2rem">
+    <div class="nav-logo" style="font-size:3rem;margin-bottom:1rem">NET STREAMING</div>
+    <p style="margin-bottom:1.5rem;color:var(--white80)">La plateforme à votre image</p>
+    <input class="welcome-in" id="welcomeName" placeholder="Votre pseudo" style="width:100%;padding:0.8rem;background:var(--bg3);border:1px solid var(--border);color:white;border-radius:30px;margin-bottom:1rem">
+    <button class="btn-save" style="width:100%" onclick="initUser()">COMMENCER →</button>
+    <p style="margin-top:1rem;font-size:0.7rem;color:var(--white50)">🔐 Code admin: nitro06</p>
   </div>
 </div>
 
 <!-- ACCESS MODAL -->
-<div id="accessModal" class="modal-bg" style="z-index:1500;display:none">
+<div id="accessModal" class="modal-bg" style="z-index:1500">
   <div class="player-wrap" style="max-width:450px;text-align:center">
-    <div class="player-topbar"><div class="player-topbar-title">🔐 ACCÈS RESTREINT</div><button class="close-btn" onclick="closeAccessModal()">✕</button></div>
+    <div class="player-topbar"><span>🔐 ACCÈS REQUIS</span><button onclick="closeAccessModal()">✕</button></div>
     <div style="padding:1.5rem">
-      <p style="margin-bottom:1rem;color:var(--white50)">Vous pouvez naviguer, mais une clé est requise pour regarder.</p>
-      <input type="text" id="accessKeyInput" placeholder="Entrez votre clé" style="width:100%;padding:10px;margin-bottom:1rem;background:var(--bg4);border:1px solid var(--border);color:white;border-radius:4px">
-      <button class="btn-save" style="width:100%" onclick="verifyAccessKey()">✅ Activer ma clé</button>
+      <p style="margin-bottom:1rem">Entrez votre clé d'accès pour regarder</p>
+      <input type="text" id="accessKeyInput" placeholder="Clé d'accès" style="width:100%;padding:0.8rem;margin-bottom:1rem;background:var(--bg4);border:1px solid var(--border);color:white;border-radius:30px">
+      <button class="btn-save" style="width:100%" onclick="verifyAccessKey()">ACTIVER</button>
     </div>
   </div>
 </div>
 
-<!-- NAV -->
+<!-- PROFILE MODAL -->
+<div id="profileModal" class="profile-modal">
+  <div class="profile-container">
+    <div class="profile-avatar" id="profileAvatar">👤</div>
+    <h3 style="text-align:center;margin-bottom:1rem" id="profileName"></h3>
+    <div style="margin-bottom:1rem">
+      <label style="font-size:0.8rem;color:var(--white50)">Changer de profil</label>
+      <div id="profileList" style="display:flex;gap:1rem;margin-top:0.5rem;flex-wrap:wrap"></div>
+      <button onclick="showAddProfile()" style="margin-top:0.5rem;background:var(--glass);border:1px solid var(--border);padding:0.3rem 0.8rem;border-radius:20px;cursor:pointer">+ Ajouter profil</button>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:1rem;margin-top:0.5rem">
+      <button class="btn-save" style="width:100%;background:var(--bg4);color:var(--white);margin-bottom:0.5rem" onclick="toggleTheme()">🌓 Thème clair/sombre</button>
+      <button class="btn-save" style="width:100%" onclick="closeProfileModal()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAVIGATION -->
 <nav id="topnav">
   <div class="nav-logo" onclick="goHome()">NET STREAMING</div>
   <ul class="nav-links">
     <li><a href="#" id="nl-home" class="on" onclick="goHome();return false">Accueil</a></li>
     <li><a href="#" id="nl-films" onclick="openCat('Film');return false">Films</a></li>
     <li><a href="#" id="nl-series" onclick="openCat('Série');return false">Séries</a></li>
+    <li><a href="#" id="nl-watchlist" onclick="openWatchlist();return false">Ma liste</a></li>
   </ul>
   <div class="nav-right">
     <div class="nav-search-wrap">
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:10px;color:rgba(255,255,255,.4)"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="searchInput" placeholder="Rechercher..." oninput="doSearch(this.value)" onkeydown="chkSecret(event)">
+      <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--white50)"></i>
+      <input type="text" id="searchInput" placeholder="Titre, acteur, genre..." oninput="doSearch(this.value)" onkeydown="chkSecret(event)">
     </div>
-    <div class="theme-toggle" onclick="toggleTheme()">🌓</div>
-    <div class="nav-avatar" id="navAvatar">?</div>
+    <div class="nav-avatar" id="navAvatar" onclick="toggleProfileDropdown()">?</div>
+    <div class="profile-dropdown" id="profileDropdown">
+      <a onclick="openProfileModal()"><i class="fas fa-user-circle"></i> Mon compte</a>
+      <a onclick="showWatchlist()"><i class="fas fa-list"></i> Ma liste</a>
+      <a onclick="showContinueWatching()"><i class="fas fa-history"></i> Continuer</a>
+      <a onclick="logout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+    </div>
   </div>
 </nav>
 
-<!-- HOME -->
+<div class="swipe-indicator">← Glissez → pour voir plus</div>
+
+<!-- HOME VIEW -->
 <div id="view-home" class="view active">
   <div class="hero">
-    <img class="hero-img" id="heroImg" src="" alt="">
+    <img class="hero-img" id="heroImg" src="">
     <div class="hero-grad-left"></div>
     <div class="hero-grad-bot"></div>
     <div class="hero-content">
-      <div class="hero-badge"><span class="hero-badge-dot"></span>À la une</div>
+      <div class="hero-badge"><span class="hero-badge-dot"></span> NOUVEAUTÉ</div>
       <h1 class="hero-title" id="heroTitle"></h1>
       <div class="hero-meta" id="heroMeta"></div>
       <p class="hero-desc" id="heroDesc"></p>
       <div class="hero-btns">
-        <button class="btn-primary" id="heroPlayBtn">▶ Regarder</button>
-        <button class="btn-secondary" id="heroInfoBtn">ℹ️ Détails</button>
+        <button class="btn-primary" id="heroPlayBtn"><i class="fas fa-play"></i> Regarder</button>
+        <button class="btn-secondary" id="heroInfoBtn"><i class="fas fa-info-circle"></i> Détails</button>
       </div>
     </div>
   </div>
   <div class="rows" id="homeRows"></div>
 </div>
 
-<!-- CATEGORY -->
+<!-- CATEGORY VIEW -->
 <div id="view-category" class="view">
-  <div class="cat-hero"><div class="cat-hero-title" id="catTitle">Films</div></div>
+  <div class="cat-hero">
+    <div class="cat-hero-title" id="catTitle">Films</div>
+    <div class="cat-filter-bar" id="catFilters"></div>
+  </div>
   <div class="cat-grid" id="catGrid"></div>
 </div>
 
-<!-- DETAIL -->
+<!-- DETAIL VIEW -->
 <div id="view-detail" class="view">
-  <div class="hero"><img class="hero-img" id="detailHeroImg" src=""><div class="hero-grad-left"></div><div class="hero-grad-bot"></div>
-    <div class="hero-content"><h1 class="hero-title" id="detailTitle"></h1><div class="hero-meta" id="detailMeta"></div>
-      <div class="hero-btns"><button class="btn-primary" id="detailPlayBtn">▶ Regarder</button><button class="btn-secondary" onclick="goBack()">← Retour</button></div>
+  <div class="hero" style="height:65vh">
+    <img class="hero-img" id="detailHeroImg" src="">
+    <div class="hero-grad-left"></div>
+    <div class="hero-grad-bot"></div>
+    <div class="hero-content">
+      <h1 class="hero-title" id="detailTitle"></h1>
+      <div class="hero-meta" id="detailMeta"></div>
+      <div class="hero-btns">
+        <button class="btn-primary" id="detailPlayBtn"><i class="fas fa-play"></i> Regarder</button>
+        <button class="btn-secondary" onclick="goBack()"><i class="fas fa-arrow-left"></i> Retour</button>
+      </div>
     </div>
   </div>
-  <div class="detail-body"><div class="detail-grid"><div><p class="detail-desc-text" id="detailDesc"></p></div><div><div class="dinfo-box" id="detailInfoBox"></div></div></div></div>
+  <div class="detail-body">
+    <div class="detail-grid">
+      <div>
+        <p class="detail-desc-text" id="detailDesc"></p>
+        <div id="similarSection" style="margin-top:2rem">
+          <h4 style="margin-bottom:0.8rem">📽️ Vous aimerez aussi</h4>
+          <div class="similar-scroll" id="similarList"></div>
+        </div>
+      </div>
+      <div>
+        <div class="dinfo-box" id="detailInfoBox"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- ADMIN -->
+<!-- WATCHLIST VIEW -->
+<div id="view-watchlist" class="view">
+  <div class="cat-hero"><div class="cat-hero-title">📋 Ma liste</div></div>
+  <div class="cat-grid" id="watchlistGrid"></div>
+</div>
+
+<!-- CONTINUE WATCHING VIEW -->
+<div id="view-continue" class="view">
+  <div class="cat-hero"><div class="cat-hero-title">⏯️ Continuer à regarder</div></div>
+  <div class="cat-grid" id="continueGrid"></div>
+</div>
+
+<!-- ADMIN PANEL -->
 <div id="view-admin" class="view">
-  <div class="adm-nav"><div class="adm-logo">NET STREAMING <span style="font-size:.6rem">Admin</span></div><button class="btn-save" onclick="goHome()" style="padding:.3rem .8rem">← Site</button></div>
+  <div class="adm-nav"><div class="adm-logo">🎬 NET STREAMING <span style="font-size:0.7rem">ADMIN</span></div><button class="btn-save" onclick="goHome()" style="background:var(--bg4);color:var(--white)">← RETOUR SITE</button></div>
   <div class="adm-layout">
     <aside class="adm-side">
-      <div class="side-link on" onclick="showAdmPage('dashboard',this)">📊 Dashboard</div>
-      <div class="side-link" onclick="showAdmPage('films',this)">🎬 Catalogue</div>
-      <div class="side-link" onclick="openImport()">⚡ Import</div>
-      <div class="side-link" onclick="showAdmPage('add',this)">➕ Ajouter</div>
-      <div class="side-link" onclick="showAdmPage('keys',this)">🔑 Clés d'accès</div>
-      <div class="side-link" onclick="showAdmPage('security',this)">🔒 Sécurité & Logs</div>
-      <div class="side-link" onclick="showAdmPage('users',this)">👥 Utilisateurs</div>
+      <div class="side-link on" onclick="showAdmPage('dashboard',this)"><i class="fas fa-chart-line"></i> Dashboard</div>
+      <div class="side-link" onclick="showAdmPage('catalog',this)"><i class="fas fa-film"></i> Catalogue</div>
+      <div class="side-link" onclick="openImport()"><i class="fas fa-cloud-upload-alt"></i> Import</div>
+      <div class="side-link" onclick="showAdmPage('add',this)"><i class="fas fa-plus-circle"></i> Ajouter</div>
+      <div class="side-link" onclick="showAdmPage('keys',this)"><i class="fas fa-key"></i> Clés d'accès</div>
+      <div class="side-link" onclick="showAdmPage('users',this)"><i class="fas fa-users"></i> Utilisateurs</div>
+      <div class="side-link" onclick="showAdmPage('bans',this)"><i class="fas fa-ban"></i> Bannis</div>
+      <div class="side-link" onclick="showAdmPage('logs',this)"><i class="fas fa-history"></i> Logs</div>
     </aside>
     <main class="adm-main">
-      <div id="adm-dashboard" class="adm-page on"><div class="stats-grid" id="dashStats"></div><div class="table-wrap"><table><thead><tr><th>Titre</th><th>Type</th></tr></thead><tbody id="dashTbody"></tbody></table></div></div>
-      <div id="adm-films" class="adm-page"><div class="table-wrap"><table><thead><tr><th>Titre</th><th>Type</th><th>Actions</th></tr></thead><tbody id="admTbody"></tbody></table></div></div>
-      <div id="adm-add" class="adm-page"><div style="background:var(--bg3);padding:1.5rem;border-radius:6px"><div><button class="ftab on" onclick="setType('Film')">Film</button><button class="ftab" onclick="setType('Série')">Série</button><input type="hidden" id="fType" value="Film"></div><div class="form-grid" style="margin-top:1rem"><input class="fi" id="fTitle" placeholder="Titre"><textarea class="fta" id="fDesc" placeholder="Synopsis"></textarea><input class="fi" id="fYear" placeholder="Année"><input class="fi" id="fRating" placeholder="Note"><input class="fi" id="fPoster" placeholder="URL Affiche"><input class="fi" id="fVideo" placeholder="URL Vidéo"></div><div class="gchips" style="margin-top:1rem"><span class="gchip" onclick="togGenre(this,'Action')">Action</span><span class="gchip" onclick="togGenre(this,'Drame')">Drame</span><span class="gchip" onclick="togGenre(this,'Sci-Fi')">Sci-Fi</span><span class="gchip" onclick="togGenre(this,'Comédie')">Comédie</span></div><div class="form-acts" style="margin-top:1rem"><button class="btn-save" onclick="saveContent('Actif')">Publier</button></div></div></div>
+      <div id="adm-dashboard" class="adm-page on"><div class="stats-grid" id="dashStats"></div><div class="table-wrap"><table><thead><tr><th>Derniers ajouts</th><th>Type</th></tr></thead><tbody id="dashTbody"></tbody></table></div></div>
+      <div id="adm-catalog" class="adm-page"><div class="table-wrap"><table><thead><tr><th>Titre</th><th>Type</th><th>Année</th><th>Actions</th></tr></thead><tbody id="admTbody"></tbody></table></div></div>
+      <div id="adm-add" class="adm-page"><div style="background:var(--bg3);padding:1.5rem;border-radius:16px"><div style="display:flex;gap:0.5rem;margin-bottom:1rem"><button class="ftab btn-save" style="background:var(--bg4)" onclick="setType('Film')">Film</button><button class="ftab btn-save" style="background:var(--bg4)" onclick="setType('Série')">Série</button><input type="hidden" id="fType" value="Film"></div><div class="form-grid"><input class="fi" id="fTitle" placeholder="Titre"><textarea class="fta" id="fDesc" placeholder="Synopsis" rows="3"></textarea><input class="fi" id="fYear" placeholder="Année"><input class="fi" id="fRating" placeholder="Note /10"><input class="fi" id="fPoster" placeholder="URL Affiche"><input class="fi" id="fBackdrop" placeholder="URL Fond"><input class="fi" id="fVideo" placeholder="URL Vidéo"></div><div class="gchips"><span class="gchip" onclick="togGenre(this,'Action')">Action</span><span class="gchip" onclick="togGenre(this,'Drame')">Drame</span><span class="gchip" onclick="togGenre(this,'Sci-Fi')">Sci-Fi</span><span class="gchip" onclick="togGenre(this,'Comédie')">Comédie</span><span class="gchip" onclick="togGenre(this,'Horreur')">Horreur</span><span class="gchip" onclick="togGenre(this,'Romance')">Romance</span></div><div style="margin-top:1rem"><button class="btn-save" onclick="saveContent('Actif')">PUBLIER</button><button class="btn-save" style="background:var(--bg4);margin-left:0.5rem" onclick="resetForm()">ANNULER</button></div></div></div>
       <div id="adm-keys" class="adm-page"><div style="margin-bottom:1rem"><button class="btn-save" onclick="showKeyGenerator()">+ Générer une clé</button></div><div class="table-wrap" id="keysTable"></div></div>
-      <div id="adm-security" class="adm-page"><div style="margin-bottom:1rem">IP réelle : <span id="realIpDisplay" style="color:#81c784;font-family:monospace">…</span> <button class="btn-save" onclick="clearLogs()" style="margin-left:1rem;padding:.3rem .8rem">Effacer logs</button></div><div class="table-wrap" id="logsContainer"></div></div>
-      <div id="adm-users" class="adm-page"><div class="table-wrap"><table><thead><tr><th>Utilisateur</th><th>Email</th><th>Actions</th></tr></thead><tbody id="usersTbody"></tbody></table></div><button class="btn-save" onclick="addUser()" style="margin-top:1rem">+ Ajouter</button></div>
+      <div id="adm-users" class="adm-page"><div class="table-wrap"><table><thead><tr><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>Actions</th></tr></thead><tbody id="usersTbody"></tbody></table></div><button class="btn-save" onclick="addUser()" style="margin-top:1rem">+ Ajouter utilisateur</button></div>
+      <div id="adm-bans" class="adm-page"><div class="table-wrap"><table><thead><tr><th>IP Bannie</th><th>Raison</th><th>Date</th><th>Action</th></tr></thead><tbody id="bansTbody"></tbody></table></div><div style="margin-top:1rem"><input id="banIpInput" placeholder="IP à bannir" class="fi" style="width:200px"><button class="btn-save" onclick="banIp()">Bannir IP</button></div></div>
+      <div id="adm-logs" class="adm-page"><div class="table-wrap" id="logsContainer"></div><button class="btn-save" onclick="clearLogs()">Effacer les logs</button></div>
     </main>
   </div>
 </div>
 
-<!-- PLAYER -->
+<!-- PLAYER MODAL -->
 <div class="modal-bg" id="playerModal" onclick="if(event.target===this)closePlayer()">
-  <div class="player-wrap"><div class="player-topbar"><div class="player-topbar-title" id="playerTitle">—</div><button class="close-btn" onclick="closePlayer()">✕</button></div>
-  <div class="vid-container"><video id="mainVid" preload="metadata"></video></div>
-  <div class="ctrl-bar"><button class="ctrl-btn" onclick="togPlay()">▶/⏸</button><span class="ctrl-time" id="ctrlTime">0:00</span></div></div>
+  <div class="player-wrap">
+    <div class="player-topbar"><span id="playerTitle">—</span><button onclick="closePlayer()">✕</button></div>
+    <div class="vid-container"><video id="mainVid" preload="metadata"></video></div>
+    <div class="vid-controls">
+      <button class="ctrl-btn" onclick="togPlay()"><i class="fas fa-play"></i></button>
+      <span id="ctrlTime">0:00 / 0:00</span>
+      <div class="progress-container" id="progressContainer"><div class="progress-bar" id="progressBar"></div></div>
+      <select class="speed-select" id="speedSelect" onchange="setSpeed(this.value)"><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option><option value="2">2x</option></select>
+      <button onclick="toggleFullscreen()"><i class="fas fa-expand"></i></button>
+      <button onclick="toggleCinemaMode()"><i class="fas fa-tv"></i></button>
+    </div>
+  </div>
 </div>
 
 <!-- IMPORT MODAL -->
-<div id="importModal"><div class="import-box"><div class="import-head"><div class="import-title">⚡ IMPORT</div><button class="close-btn" onclick="closeImport()">✕</button></div><div class="import-body"><div class="mass-btns"><button class="mass-btn active" onclick="loadQuick('popular_films',this)">Films populaires</button><button class="mass-btn" onclick="loadQuick('popular_series',this)">Séries populaires</button></div><div class="import-results" id="importResults"></div><div style="margin-top:1rem"><input class="fi" id="externalTitle" placeholder="Titre (import externe)" style="margin-bottom:10px"><input class="fi" id="externalUrl" placeholder="URL vidéo (mp4, m3u8...)"><button class="btn-save" style="margin-top:10px" onclick="importExternalVideo()">Importer lien externe</button></div></div><div class="import-footer"><button class="btn-save" onclick="closeImport()">Fermer</button><button class="btn-save" id="importDoBtn" onclick="doImport()">Importer sélectionnés</button></div></div></div>
-
-<div class="toast" id="toast"><span id="toastIc">✓</span><span id="toastMsg">OK</span></div>
+<div id="importModal" class="modal-bg"><div class="player-wrap" style="max-width:800px"><div class="player-topbar"><span>⚡ IMPORT RAPIDE</span><button onclick="closeImport()">✕</button></div><div class="import-body" style="padding:1rem"><div class="mass-btns" style="display:flex;gap:0.5rem;margin-bottom:1rem"><button class="mass-btn btn-save" style="background:var(--bg4)" onclick="loadQuick('popular_films',this)">Films populaires</button><button class="mass-btn btn-save" style="background:var(--bg4)" onclick="loadQuick('popular_series',this)">Séries populaires</button></div><div class="import-results" id="importResults" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px"></div><div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem"><input class="fi" id="externalTitle" placeholder="Titre du lien externe"><input class="fi" id="externalUrl" placeholder="URL vidéo (mp4, m3u8...)" style="margin-top:0.5rem"><button class="btn-save" style="margin-top:0.5rem" onclick="importExternalVideo()">Importer lien externe</button></div></div><div class="import-footer" style="padding:1rem;border-top:1px solid var(--border);display:flex;gap:0.5rem;justify-content:flex-end"><button class="btn-save" onclick="closeImport()">Fermer</button><button class="btn-save" id="importDoBtn" onclick="doImport()">Importer sélectionnés</button></div></div></div>
 
 <script>
-// ===================== CATALOGUE =====================
+// ===================== DONNÉES PRINCIPALES =====================
 let catalog = [
-  {id:0,title:'Inception',type:'Film',year:2010,rating:8.8,genres:['Sci-Fi','Action'],director:'Nolan',desc:"Rêves et vol d'idées.",status:'Actif',poster:'https://image.tmdb.org/t/p/w400/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg',backdrop:'https://image.tmdb.org/t/p/w1280/s3TBrRGB1iav7gFOCNx3H31MoES.jpg',video:'',date:'2024'},
-  {id:1,title:'Interstellar',type:'Film',year:2014,rating:8.6,genres:['Sci-Fi'],director:'Nolan',desc:"Voyage spatial.",status:'Actif',poster:'https://image.tmdb.org/t/p/w400/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',backdrop:'https://image.tmdb.org/t/p/w1280/xJHokMbljvjADYdit5fK5VQsXEG.jpg',video:'',date:'2024'},
-  {id:2,title:'Stranger Things',type:'Série',year:2016,rating:8.7,genres:['Horreur'],seasons:4,desc:"Hawkins et l'Upside Down.",status:'Actif',poster:'https://image.tmdb.org/t/p/w400/49WJfeN0moxb9IPfGn8AIqMGskD.jpg',backdrop:'https://image.tmdb.org/t/p/w1280/56v2KjBlU4XaOv9rVYEQypROD7P.jpg',video:'',date:'2024'}
+  {id:0,title:'Inception',type:'Film',year:2010,rating:8.8,genres:['Sci-Fi','Action'],director:'Christopher Nolan',desc:"Un voleur qui pénètre les rêves pour voler des secrets se voit offrir une chance de rédemption.",status:'Actif',poster:'https://image.tmdb.org/t/p/w400/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg',backdrop:'https://image.tmdb.org/t/p/w1280/s3TBrRGB1iav7gFOCNx3H31MoES.jpg',video:'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',views:12450,date:'2024-12-01'},
+  {id:1,title:'Interstellar',type:'Film',year:2014,rating:8.6,genres:['Sci-Fi','Drame'],director:'Christopher Nolan',desc:"Une équipe d'explorateurs voyage à travers un trou de ver à la recherche d'un nouveau foyer pour l'humanité.",status:'Actif',poster:'https://image.tmdb.org/t/p/w400/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',backdrop:'https://image.tmdb.org/t/p/w1280/xJHokMbljvjADYdit5fK5VQsXEG.jpg',video:'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFunflies.mp4',views:9870,date:'2024-12-05'},
+  {id:2,title:'Stranger Things',type:'Série',year:2016,rating:8.7,genres:['Horreur','Sci-Fi'],seasons:4,desc:"Quand un garçon disparaît, une petite ville découvre une expérience secrète, des forces surnaturelles et une étrange fillette.",status:'Actif',poster:'https://image.tmdb.org/t/p/w400/49WJfeN0moxb9IPfGn8AIqMGskD.jpg',backdrop:'https://image.tmdb.org/t/p/w1280/56v2KjBlU4XaOv9rVYEQypROD7P.jpg',video:'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',views:25600,date:'2024-11-20'},
+  {id:3,title:'The Witcher',type:'Série',year:2019,rating:8.2,genres:['Fantasy','Action'],seasons:3,desc:"Geralt de Riv, un chasseur de monstres mutant, lutte pour trouver sa place dans un monde où les humains sont souvent plus mauvais que les bêtes.",status:'Actif',poster:'https://image.tmdb.org/t/p/w400/7vjaCdMw15FEbXyLQTVa04URsPm.jpg',backdrop:'https://image.tmdb.org/t/p/w1280/cCv0xJo3cuCEi3jB2Yknv50MaW7.jpg',video:'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',views:18750,date:'2024-12-10'}
 ];
 let users = [{id:1,username:'Admin',email:'admin@netstreaming.fr',role:'admin',date:'2024'}];
 let logs = [];
-let accessKeys = [{code:"VIP-LIFE-999",type:"life",expiresAt:null},{code:"DEMO-7DAYS",type:"days",expiresAt:Date.now()+7*86400000}];
+let accessKeys = [{code:"VIP-LIFE-999",type:"life",expiresAt:null}];
+let bannedIPs = [];
+let watchlist = []; // {userId, contentId}
+let continueWatching = []; // {userId, contentId, progress, timestamp}
+let profiles = []; // {userId, profileName, avatar}
 let currentUser = null;
+let currentProfile = null;
 let currentAccessKey = null;
 let selectedGenres = [];
 let editingId = null;
 let realIP = null;
 let importSelections = [];
 let currentImportItems = [];
+let isCinemaMode = false;
+let videoCurrentTime = 0;
 
 const TMDB_CATALOG = {
-  popular_films:[{tmdbId:550,title:'Fight Club',type:'Film',year:1999,rating:8.8,genres:['Drame'],poster:'https://image.tmdb.org/t/p/w400/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg',desc:"Club de combat."}],
-  popular_series:[{tmdbId:1396,title:'Breaking Bad',type:'Série',year:2008,rating:9.5,genres:['Drame'],poster:'https://image.tmdb.org/t/p/w400/ggFHVNu6YYI5L9pCfOacjizRGt.jpg',desc:"Chimiste devenu baron."}]
-};
+  popular_films:[{tmdbId:550,title:'Fight Club',type:'Film',year:1999,rating:8.8,genres:['Drame'],poster:'https://image.tmdb.org/t/p/w400/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg',desc:"Un employé de bureau insomniaque rencontre un savonnier excentrique."},{tmdbId:680,title:'Pulp Fiction',type:'Film',year:1994,rating:8.9,genres:['Crime','Drame'],poster:'https://image.tmdb.org/t/p/w400/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg',desc:"Les vies de deux tueurs à gages, d'un boxeur, d'un gangster et de sa femme s'entremêlent."}],
+  popular_series:[{tmdbId:1396,title:'Breaking Bad',type:'Série',year:2008,rating:9.5,genres:['Drame','Crime'],poster:'https://image.tmdb.org/t/p/w400/ggFHVNu6YYI5L9pCfOacjizRGt.jpg',desc:"Un professeur de chimie devenu baron de la drogue."},{tmdbId:60625,title:'The Last of Us',type:'Série',year:2023,rating:8.8,genres:['Drame','Horreur'],poster:'https://image.tmdb.org/t/p/w400/uKvVjHNqB5VmOrdxqUF2Bx9Vnmd.jpg',desc:"Après une pandémie, un homme traverse les États-Unis avec une adolescente."}]};
 
-function saveCatalog(){localStorage.setItem('ns_catalog',JSON.stringify(catalog))}
-function saveUsers(){localStorage.setItem('ns_users',JSON.stringify(users))}
-function saveLogs(){localStorage.setItem('ns_logs',JSON.stringify(logs))}
-function saveKeys(){localStorage.setItem('ns_access_keys',JSON.stringify(accessKeys))}
-
-function loadData(){
-  let sc = localStorage.getItem('ns_catalog');
-  if(sc) catalog = JSON.parse(sc);
-  let su = localStorage.getItem('ns_users');
-  if(su) users = JSON.parse(su);
-  let sl = localStorage.getItem('ns_logs');
-  if(sl) logs = JSON.parse(sl);
-  let sk = localStorage.getItem('ns_access_keys');
-  if(sk) accessKeys = JSON.parse(sk);
-}
+// ===================== STOCKAGE LOCAL =====================
+function saveAll(){localStorage.setItem('ns_catalog',JSON.stringify(catalog));localStorage.setItem('ns_users',JSON.stringify(users));localStorage.setItem('ns_logs',JSON.stringify(logs));localStorage.setItem('ns_keys',JSON.stringify(accessKeys));localStorage.setItem('ns_bans',JSON.stringify(bannedIPs));localStorage.setItem('ns_watchlist',JSON.stringify(watchlist));localStorage.setItem('ns_continue',JSON.stringify(continueWatching));localStorage.setItem('ns_profiles',JSON.stringify(profiles));}
+function loadAll(){let sc=localStorage.getItem('ns_catalog');if(sc)catalog=JSON.parse(sc);let su=localStorage.getItem('ns_users');if(su)users=JSON.parse(su);let sl=localStorage.getItem('ns_logs');if(sl)logs=JSON.parse(sl);let sk=localStorage.getItem('ns_keys');if(sk)accessKeys=JSON.parse(sk);let sb=localStorage.getItem('ns_bans');if(sb)bannedIPs=JSON.parse(sb);let sw=localStorage.getItem('ns_watchlist');if(sw)watchlist=JSON.parse(sw);let scon=localStorage.getItem('ns_continue');if(scon)continueWatching=JSON.parse(scon);let sp=localStorage.getItem('ns_profiles');if(sp)profiles=JSON.parse(sp);}
 
 // ===================== IP RÉELLE =====================
-async function fetchIP(){
-  try{
-    const r = await fetch('https://api.ipify.org?format=json');
-    const d = await r.json();
-    realIP = d.ip;
-    const el = document.getElementById('realIpDisplay');
-    if(el) el.textContent = realIP;
-  } catch(e){
-    try{
-      const r2 = await fetch('https://api64.ipify.org?format=json');
-      const d2 = await r2.json();
-      realIP = d2.ip;
-      const el = document.getElementById('realIpDisplay');
-      if(el) el.textContent = realIP;
-    } catch(e2){ realIP = 'N/A'; }
-  }
-}
+async function fetchIP(){try{let r=await fetch('https://api.ipify.org?format=json');let d=await r.json();realIP=d.ip;if(bannedIPs.includes(realIP)){alert("❌ Votre IP est bannie.");document.body.innerHTML="<div style='text-align:center;padding:50px'><h1>Accès refusé</h1><p>Votre IP est bannie de cette plateforme.</p></div>";}}catch(e){realIP='N/A';}}
 
-function addLog(action, user){
-  user = user || currentUser || 'Anonyme';
-  logs.unshift({id:Date.now(), user, action, ip:realIP||'...', time:new Date().toLocaleString('fr-FR')});
-  if(logs.length > 100) logs.pop();
-  saveLogs();
-  if(document.getElementById('adm-security')?.classList.contains('on')) renderLogs();
-}
+// ===================== LOGS =====================
+function addLog(action,user){user=user||currentUser||'Anonyme';logs.unshift({id:Date.now(),user,action,ip:realIP||'...',time:new Date().toLocaleString('fr-FR')});if(logs.length>200)logs.pop();saveAll();renderLogs();}
+function renderLogs(){let c=document.getElementById('logsContainer');if(!c)return;c.innerHTML=logs.length?`<table><thead><tr><th>Utilisateur</th><th>Action</th><th>IP</th><th>Date</th></tr></thead><tbody>${logs.map(l=>`<tr><td>${l.user}</td><td>${l.action}</td><td>${l.ip}</td><td>${l.time}</td></tr>`).join('')}</tbody></table>`:'<p style="padding:1rem">Aucun log</p>';}
+function clearLogs(){logs=[];saveAll();renderLogs();toast('Logs effacés','✓');}
 
-function renderLogs(){
-  let c = document.getElementById('logsContainer');
-  if(!c) return;
-  if(!logs.length){ c.innerHTML = '<p style="padding:1rem;color:var(--white50)">Aucun log.</p>'; return; }
-  c.innerHTML = logs.map(l => `<div class="log-item"><span class="log-user">${l.user}</span><span style="color:var(--white80)">${l.action}</span><span class="log-ip">${l.ip}</span><span class="log-time">${l.time}</span></div>`).join('');
-}
-function clearLogs(){ logs = []; saveLogs(); renderLogs(); toast('Logs effacés','✓',true); }
+// ===================== BANNISSEMENT =====================
+function banIp(){let ip=document.getElementById('banIpInput').value.trim();if(!ip)return;if(!bannedIPs.includes(ip))bannedIPs.push(ip);saveAll();renderBans();toast(`IP ${ip} bannie`,'🔨');addLog(`Bannissement IP: ${ip}`);}
+function unbanIp(ip){bannedIPs=bannedIPs.filter(i=>i!==ip);saveAll();renderBans();toast(`IP ${ip} débannie`,'✓');}
+function renderBans(){let tbody=document.getElementById('bansTbody');if(tbody)tbody.innerHTML=bannedIPs.map(ip=>`<tr><td>${ip}</td><td>Violation des conditions</td><td>${new Date().toLocaleDateString()}</td><td><button class="iBtn" onclick="unbanIp('${ip}')">Débannir</button></td></tr>`).join('');}
 
-// ===================== CLÉS D'ACCÈS =====================
-function verifyAccessKey(){
-  let code = document.getElementById('accessKeyInput').value.trim().toUpperCase();
-  let key = accessKeys.find(k => k.code === code);
-  if(!key){ toast('Clé invalide','❌',false); return; }
-  if(key.expiresAt && Date.now() > key.expiresAt){ toast('Clé expirée','⌛',false); return; }
-  currentAccessKey = key;
-  document.getElementById('accessModal').style.display = 'none';
-  toast(`Accès activé (${key.type==='life'?'À vie':'Temporaire'})`,'✓',true);
-  addLog(`Activation clé: ${code}`);
-}
-function hasValidKey(){ return currentAccessKey && (!currentAccessKey.expiresAt || Date.now() < currentAccessKey.expiresAt); }
-function checkAccessToWatch(){ if(!hasValidKey()){ document.getElementById('accessModal').style.display='flex'; toast('Clé requise','🔑',false); return false; } return true; }
-function closeAccessModal(){ document.getElementById('accessModal').style.display='none'; }
+// ===================== ACCÈS & CLÉS =====================
+function verifyAccessKey(){let code=document.getElementById('accessKeyInput').value.trim().toUpperCase();let key=accessKeys.find(k=>k.code===code);if(!key){toast('Clé invalide','❌');return;}if(key.expiresAt&&Date.now()>key.expiresAt){toast('Clé expirée','⌛');return;}currentAccessKey=key;document.getElementById('accessModal').style.display='none';toast(`Accès activé (${key.type==='life'?'À vie':'Temporaire'})`,'✓');addLog(`Activation clé: ${code}`);}
+function hasValidKey(){return currentAccessKey&&(!currentAccessKey.expiresAt||Date.now()<currentAccessKey.expiresAt);}
+function checkAccessToWatch(){if(!hasValidKey()){document.getElementById('accessModal').style.display='flex';toast('Clé requise','🔑');return false;}return true;}
+function closeAccessModal(){document.getElementById('accessModal').style.display='none';}
+function generateKey(duration,days=0){let code="KEY-"+Math.random().toString(36).substr(2,8).toUpperCase();let expiresAt=null;if(duration==='days')expiresAt=Date.now()+(days||7)*86400000;else if(duration==='weeks')expiresAt=Date.now()+(days||1)*7*86400000;else if(duration==='months')expiresAt=Date.now()+(days||1)*30*86400000;accessKeys.push({code,type:duration,expiresAt});saveAll();renderKeysTable();toast(`Clé générée: ${code}`,'✓');addLog(`Génération clé: ${code}`);}
+function revokeKey(code){accessKeys=accessKeys.filter(k=>k.code!==code);saveAll();renderKeysTable();toast('Clé révoquée','✓');}
+function renderKeysTable(){let html=`<table><thead><tr><th>Code</th><th>Type</th><th>Expiration</th><th>Action</th></tr></thead><tbody>${accessKeys.map(k=>`<tr><td><code>${k.code}</code></td><td>${k.type}</td><td>${k.expiresAt?new Date(k.expiresAt).toLocaleDateString():'Illimité'}</td><td><button class="iBtn d" onclick="revokeKey('${k.code}')">🗑️</button></td></tr>`).join('')}</tbody></table>`;let container=document.getElementById('keysTable');if(container)container.innerHTML=html;}
+function showKeyGenerator(){let type=prompt("Type (days/weeks/months/life):","days");if(!type)return;if(type==='life')generateKey('life');else{let days=parseInt(prompt("Nombre:","7"));generateKey(type,days);}}
 
-// ===================== GÉNÉRATION CLÉS ADMIN =====================
-function generateKey(duration, days=0){
-  let code = "KEY-"+Math.random().toString(36).substr(2,8).toUpperCase();
-  let expiresAt = null;
-  if(duration === 'days') expiresAt = Date.now() + (days||7)*86400000;
-  else if(duration === 'weeks') expiresAt = Date.now() + (days||1)*7*86400000;
-  else if(duration === 'months') expiresAt = Date.now() + (days||1)*30*86400000;
-  accessKeys.push({code, type:duration, expiresAt, createdBy:currentUser});
-  saveKeys();
-  renderKeysTable();
-  toast(`Clé générée : ${code}`,'✓',true);
-  addLog(`Génération clé: ${code}`);
-}
-function revokeKey(code){ accessKeys = accessKeys.filter(k=>k.code!==code); saveKeys(); renderKeysTable(); toast('Clé révoquée','✓',true); addLog(`Révocation clé: ${code}`); }
-function renderKeysTable(){
-  let html = `<table class="table-admin"><thead><th>Code</th><th>Type</th><th>Expiration</th><th>Action</th></thead><tbody>${accessKeys.map(k=>`<tr><td>${k.code}</td><td>${k.type}</td><td>${k.expiresAt?new Date(k.expiresAt).toLocaleDateString():'Illimité'}</td><td><button class="iBtn d" onclick="revokeKey('${k.code}')">🗑️</button></td></tr>`).join('')}</tbody></table>`;
-  document.getElementById('keysTable').innerHTML = html;
-}
-function showKeyGenerator(){
-  let type = prompt("Type (days/weeks/months/life):", "days");
-  if(!type) return;
-  if(type === 'life') generateKey('life');
-  else{
-    let days = parseInt(prompt("Nombre de jours/semaines/mois:", "7"));
-    generateKey(type, days);
-  }
-}
+// ===================== PROFILS =====================
+function openProfileModal(){document.getElementById('profileModal').classList.add('open');renderProfileList();document.getElementById('profileName').innerText=currentUser||'Invité';}
+function closeProfileModal(){document.getElementById('profileModal').classList.remove('open');}
+function renderProfileList(){let container=document.getElementById('profileList');if(!container)return;let userProfiles=profiles.filter(p=>p.userId===currentUser);container.innerHTML=userProfiles.map(p=>`<div onclick="switchProfile('${p.profileName}')" style="text-align:center;cursor:pointer"><div class="profile-avatar" style="width:60px;height:60px;font-size:1.5rem">${p.avatar||'👤'}</div><span style="font-size:0.7rem">${p.profileName}</span></div>`).join('');}
+function switchProfile(profileName){currentProfile=profiles.find(p=>p.userId===currentUser&&p.profileName===profileName);localStorage.setItem('ns_currentProfile',profileName);toast(`Profil ${profileName}`,'👤');closeProfileModal();renderHome();}
+function showAddProfile(){let name=prompt("Nom du profil:");if(!name)return;let avatar=prompt("Avatar (emoji):","👤");profiles.push({userId:currentUser,profileName:name,avatar:avatar||'👤'});saveAll();renderProfileList();}
+function logout(){currentUser=null;currentProfile=null;localStorage.removeItem('ns_user');localStorage.removeItem('ns_currentProfile');location.reload();}
+function toggleProfileDropdown(){document.getElementById('profileDropdown').classList.toggle('show');}
 
-// ===================== IMPORT EXTERNE =====================
-function importExternalVideo(){
-  let title = document.getElementById('externalTitle').value.trim();
-  let url = document.getElementById('externalUrl').value.trim();
-  if(!title || !url){ toast('Titre et URL requis','⚠️',false); return; }
-  let newId = catalog.length>0 ? Math.max(...catalog.map(x=>x.id))+1 : 0;
-  catalog.unshift({id:newId, title, type:'Film', year:2025, rating:7.0, genres:['Import'], desc:'Importé depuis lien externe', status:'Actif', isNew:true, poster:'https://placehold.co/400x600/222/white?text='+encodeURIComponent(title), backdrop:'', video:url, date:new Date().toLocaleDateString('fr-FR')});
-  saveCatalog();
-  renderAdmTable();
-  renderDash();
-  toast(`"${title}" importé`,'✓',true);
-  addLog(`Import externe: ${title}`);
-  closeImport();
-}
+// ===================== WATCHLIST & CONTINUE =====================
+function toggleWatchlist(contentId){let existing=watchlist.find(w=>w.userId===currentUser&&w.contentId===contentId);if(existing){watchlist=watchlist.filter(w=>!(w.userId===currentUser&&w.contentId===contentId));toast('Retiré de ma liste','✓');}else{watchlist.push({userId:currentUser,contentId,timestamp:Date.now()});toast('Ajouté à ma liste','➕');}saveAll();}
+function isInWatchlist(contentId){return watchlist.some(w=>w.userId===currentUser&&w.contentId===contentId);}
+function showWatchlist(){openWatchlist();}
+function openWatchlist(){let userWatchlist=watchlist.filter(w=>w.userId===currentUser).map(w=>catalog.find(c=>c.id===w.contentId)).filter(c=>c);document.getElementById('watchlistGrid').innerHTML=userWatchlist.length?userWatchlist.map(m=>cardHTML(m,true)).join('') :'<p style="text-align:center;color:var(--white50)">Votre liste est vide</p>';document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));let watchlistView=document.getElementById('view-watchlist');if(watchlistView)watchlistView.classList.add('active');}
+function showContinueWatching(){let userContinue=continueWatching.filter(c=>c.userId===currentUser).map(c=>{let item=catalog.find(m=>m.id===c.contentId);if(item)item._progress=c.progress;return item;}).filter(c=>c);document.getElementById('continueGrid').innerHTML=userContinue.length?userContinue.map(m=>cardHTML(m,true)).join(''):'<p style="text-align:center">Aucun contenu en cours</p>';document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));let continueView=document.getElementById('view-continue');if(continueView)continueView.classList.add('active');}
+function saveProgress(contentId,progress){let existing=continueWatching.find(c=>c.userId===currentUser&&c.contentId===contentId);if(existing){existing.progress=progress;existing.timestamp=Date.now();}else{continueWatching.push({userId:currentUser,contentId,progress,timestamp:Date.now()});}saveAll();}
 
-// ===================== FONCTIONS PRINCIPALES =====================
-function initUser(){ let n=document.getElementById('welcomeName').value.trim(); if(!n)return; currentUser=n; localStorage.setItem('ns_user',n); document.getElementById('welcomeOver').style.display='none'; document.getElementById('navAvatar').textContent=n.charAt(0).toUpperCase(); addLog(`Connexion de ${n}`); renderHome(); }
-function goHome(){ showView('home'); }
-function showView(v){
-  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
-  document.getElementById('view-'+v).classList.add('active');
-  if(v==='home') renderHome();
-  if(v==='admin'){ renderDash(); renderAdmTable(); renderUsers(); renderLogs(); renderKeysTable(); fetchIP(); }
-}
-function renderHome(){
-  updateHero();
-  let act = catalog.filter(m=>m.status==='Actif');
-  let html = '';
-  if(act.length) html += `<div class="row"><div class="row-head"><div class="row-title">🔥 Tendances</div></div><div class="row-scroll">${act.slice(0,12).map(m=>cardHTML(m)).join('')}</div></div>`;
-  if(act.filter(m=>m.type==='Film').length) html += `<div class="row"><div class="row-head"><div class="row-title">🎬 Films</div></div><div class="row-scroll">${act.filter(m=>m.type==='Film').slice(0,12).map(m=>cardHTML(m)).join('')}</div></div>`;
-  if(act.filter(m=>m.type==='Série').length) html += `<div class="row"><div class="row-head"><div class="row-title">📺 Séries</div></div><div class="row-scroll">${act.filter(m=>m.type==='Série').slice(0,12).map(m=>cardHTML(m)).join('')}</div></div>`;
-  document.getElementById('homeRows').innerHTML = html;
-}
-function cardHTML(m){ return `<div class="card" onclick="showDetail(${m.id})"><img class="card-img" src="${m.poster}" onerror="this.style.display='none'"><div class="card-info"><div class="card-name">${m.title}</div><div class="card-sub">${m.year}</div></div></div>`; }
-function updateHero(){
-  let m = catalog.find(x=>x.status==='Actif');
-  if(!m) return;
-  document.getElementById('heroImg').src = m.backdrop || m.poster;
-  document.getElementById('heroTitle').textContent = m.title;
-  document.getElementById('heroDesc').textContent = m.desc || '';
-  document.getElementById('heroMeta').innerHTML = `★ ${m.rating} · ${m.year}`;
-  document.getElementById('heroPlayBtn').onclick = () => { if(checkAccessToWatch()) openPlayer(m); };
-  document.getElementById('heroInfoBtn').onclick = () => showDetail(m.id);
-}
-function showDetail(id){
-  let m = catalog.find(x=>x.id===id);
-  document.getElementById('detailHeroImg').src = m.backdrop || m.poster;
-  document.getElementById('detailTitle').textContent = m.title;
-  document.getElementById('detailDesc').textContent = m.desc || '';
-  document.getElementById('detailMeta').innerHTML = `★ ${m.rating} · ${m.year}`;
-  document.getElementById('detailPlayBtn').onclick = () => { if(checkAccessToWatch()) openPlayer(m); };
-  document.getElementById('detailInfoBox').innerHTML = `<div class="dinfo-row"><span>Réalisateur</span><span>${m.director||'N/A'}</span></div><div class="dinfo-row"><span>Genres</span><span>${(m.genres||[]).join(', ')}</span></div>`;
-  showView('detail');
-}
-function openPlayer(movie){ if(!checkAccessToWatch()) return; document.getElementById('playerTitle').textContent=movie.title; document.getElementById('mainVid').src=movie.video||"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"; document.getElementById('playerModal').classList.add('open'); document.getElementById('mainVid').play(); addLog(`Lecture: ${movie.title}`); }
-function closePlayer(){ document.getElementById('mainVid').pause(); document.getElementById('playerModal').classList.remove('open'); }
-function togPlay(){ let v=document.getElementById('mainVid'); v.paused?v.play():v.pause(); }
-function openCat(type){ let data=catalog.filter(m=>m.status==='Actif'&&m.type===type); document.getElementById('catTitle').textContent=type==='Film'?'FILMS':'SÉRIES'; document.getElementById('catGrid').innerHTML=data.map(m=>cardHTML(m)).join('')||'<p>Aucun contenu</p>'; showView('category'); }
-function doSearch(v){ if(!v.trim()){renderHome();return;} let res=catalog.filter(m=>m.title.toLowerCase().includes(v.toLowerCase())); document.getElementById('homeRows').innerHTML=`<div class="row"><div class="row-scroll">${res.map(m=>cardHTML(m)).join('')}</div></div>`; }
-function renderDash(){ document.getElementById('dashStats').innerHTML=`<div class="stat-card"><div class="stat-n">${catalog.length}</div><div class="stat-l">Total</div></div><div class="stat-card"><div class="stat-n">${accessKeys.length}</div><div class="stat-l">Clés</div></div>`; document.getElementById('dashTbody').innerHTML=catalog.slice(0,5).map(m=>`<tr><td>${m.title}</td><td>${m.type}</td></tr>`).join(''); }
-function renderAdmTable(){ document.getElementById('admTbody').innerHTML=catalog.map(m=>`<tr><td>${m.title}</td><td>${m.type}</td><td><button class="iBtn" onclick="editItem(${m.id})">✏️</button><button class="iBtn d" onclick="delItem(${m.id})">🗑️</button></td></tr>`).join(''); }
-function delItem(id){ if(!confirm('Supprimer ?'))return; catalog=catalog.filter(m=>m.id!==id); saveCatalog(); renderAdmTable(); renderDash(); toast('Supprimé','✓',true); addLog(`Suppression ID ${id}`); }
-function editItem(id){ let m=catalog.find(x=>x.id===id); if(!m)return; editingId=id; document.getElementById('fTitle').value=m.title; document.getElementById('fDesc').value=m.desc||''; document.getElementById('fYear').value=m.year; document.getElementById('fRating').value=m.rating; document.getElementById('fPoster').value=m.poster||''; document.getElementById('fVideo').value=m.video||''; selectedGenres=[...(m.genres||[])]; document.querySelectorAll('.gchip').forEach(c=>c.classList.toggle('on',selectedGenres.includes(c.textContent))); setType(m.type); showAdmPage('add',null); }
-function saveContent(status){ let title=document.getElementById('fTitle').value.trim(); if(!title){toast('Titre requis','⚠️',false);return;} let obj={title,type:document.getElementById('fType').value,year:parseInt(document.getElementById('fYear').value)||2024,rating:parseFloat(document.getElementById('fRating').value)||7.0,desc:document.getElementById('fDesc').value,genres:selectedGenres.length?selectedGenres:['Drame'],status,poster:document.getElementById('fPoster').value,video:document.getElementById('fVideo').value,backdrop:'',date:new Date().toLocaleDateString('fr-FR')}; if(editingId!==null){let i=catalog.findIndex(m=>m.id===editingId);if(i>-1)catalog[i]={...catalog[i],...obj};toast('Mis à jour','✓',true);addLog(`Modification: ${title}`);} else{let nid=catalog.length>0?Math.max(...catalog.map(m=>m.id))+1:0;catalog.unshift({id:nid,...obj,isNew:true});toast('Ajouté','✓',true);addLog(`Ajout: ${title}`);} editingId=null;saveCatalog();renderAdmTable();renderDash();resetForm();showAdmPage('films',null); }
-function setType(t){ document.getElementById('fType').value=t; }
-function togGenre(el,g){ el.classList.toggle('on'); if(el.classList.contains('on')){if(!selectedGenres.includes(g))selectedGenres.push(g);} else selectedGenres=selectedGenres.filter(x=>x!==g); }
-function resetForm(){ document.getElementById('fTitle').value=''; document.getElementById('fDesc').value=''; document.getElementById('fYear').value=''; document.getElementById('fRating').value='7'; document.getElementById('fPoster').value=''; document.getElementById('fVideo').value=''; selectedGenres=[]; document.querySelectorAll('.gchip').forEach(c=>c.classList.remove('on')); editingId=null; }
-function showAdmPage(p,el){ document.querySelectorAll('.adm-page').forEach(x=>x.classList.remove('on')); document.getElementById('adm-'+p).classList.add('on'); document.querySelectorAll('.side-link').forEach(l=>l.classList.remove('on')); if(el)el.classList.add('on'); if(p==='keys') renderKeysTable(); if(p==='security'){ renderLogs(); fetchIP(); } if(p==='users') renderUsers(); }
-function renderUsers(){ document.getElementById('usersTbody').innerHTML=users.map(u=>`<tr><td>${u.username}</td><td>${u.email}</td><td><button class="iBtn d" onclick="delUser(${u.id})">🗑️</button></td></tr>`).join(''); }
-function addUser(){ let n=prompt('Pseudo:'); if(!n)return; let e=prompt('Email:'); users.push({id:users.length+1,username:n,email:e||n+'@example.com',role:'user',date:new Date().toLocaleDateString('fr-FR')}); saveUsers(); renderUsers(); addLog(`Ajout user: ${n}`); toast(`${n} ajouté`,'✓',true); }
-function delUser(id){ users=users.filter(u=>u.id!==id); saveUsers(); renderUsers(); addLog(`Suppression user ID ${id}`); toast('Supprimé','✓',true); }
-function openImport(){ document.getElementById('importModal').classList.add('open'); }
-function closeImport(){ document.getElementById('importModal').classList.remove('open'); }
-function loadQuick(cat,el){ document.querySelectorAll('.mass-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); currentImportItems=TMDB_CATALOG[cat]||[]; importSelections=[]; document.getElementById('importResults').innerHTML=currentImportItems.map((m,i)=>`<div class="ir-card" onclick="togImportSel(${i},this)"><img src="${m.poster}"><div>${m.title}</div></div>`).join(''); }
-function togImportSel(idx,el){ el.classList.toggle('selected'); if(importSelections.includes(idx)) importSelections=importSelections.filter(i=>i!==idx); else importSelections.push(idx); }
-function doImport(){ importSelections.forEach(i=>{ let m=currentImportItems[i]; if(m && !catalog.some(x=>x.tmdbId===m.tmdbId)){ let newId=catalog.length>0?Math.max(...catalog.map(x=>x.id))+1:0; catalog.unshift({id:newId,title:m.title,type:m.type||'Film',year:m.year,rating:m.rating,genres:m.genres,desc:m.desc,status:'Actif',isNew:true,poster:m.poster,backdrop:m.backdrop||'',video:'',date:new Date().toLocaleDateString('fr-FR'),tmdbId:m.tmdbId}); } }); saveCatalog(); renderAdmTable(); renderDash(); closeImport(); addLog('Import TMDB'); toast('Import terminé','✓',true); }
-function toggleTheme(){ document.body.classList.toggle('light-mode'); localStorage.setItem('ns_theme',document.body.classList.contains('light-mode')?'light':'dark'); }
-function goBack(){ window.history.length>1?history.back():showView('home'); }
+// ===================== CONTENU SIMILAIRE =====================
+function getSimilarContent(content){return catalog.filter(m=>m.id!==content.id&&m.type===content.type&&m.genres.some(g=>content.genres.includes(g))).slice(0,6);}
+
+// ===================== UI & CARTES =====================
+function cardHTML(m,showProgress=false){let prog=showProgress&&m._progress?m._progress:0;let inList=isInWatchlist(m.id);return `<div class="card" onclick="showDetail(${m.id})"><img class="card-img" src="${m.poster}" onerror="this.src='https://placehold.co/400x600/222/white?text=${encodeURIComponent(m.title)}'"><div class="card-info"><div class="card-name">${m.title}</div><div class="card-sub">★ ${m.rating} · ${m.year} · ${m.type}</div></div><div class="card-watchlater" onclick="event.stopPropagation();toggleWatchlist(${m.id})"><i class="fas ${inList?'fa-check':'fa-plus'}"></i></div>${prog>0?`<div class="card-progress" style="width:${prog}%"></div>`:''}</div>`;}
+
+// ===================== LECTEUR VIDÉO =====================
+let currentVideoId=null;
+function openPlayer(movie){if(!checkAccessToWatch())return;currentVideoId=movie.id;let vid=document.getElementById('mainVid');document.getElementById('playerTitle').textContent=movie.title;vid.src=movie.video||"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";document.getElementById('playerModal').classList.add('open');vid.play().catch(e=>console.log);let saved=continueWatching.find(c=>c.userId===currentUser&&c.contentId===movie.id);if(saved){vid.currentTime=saved.progress;}setupVideoListeners(movie.id);addLog(`Lecture: ${movie.title}`);}
+function setupVideoListeners(contentId){let vid=document.getElementById('mainVid');vid.ontimeupdate=()=>{let percent=(vid.currentTime/vid.duration)*100;document.getElementById('progressBar').style.width=percent+'%';let mins=Math.floor(vid.currentTime/60);let secs=Math.floor(vid.currentTime%60);let totalMins=Math.floor(vid.duration/60);let totalSecs=Math.floor(vid.duration%60);document.getElementById('ctrlTime').innerText=`${mins}:${secs.toString().padStart(2,'0')} / ${totalMins}:${totalSecs.toString().padStart(2,'0')}`;if(vid.duration)saveProgress(contentId,vid.currentTime);};}
+function closePlayer(){let vid=document.getElementById('mainVid');vid.pause();document.getElementById('playerModal').classList.remove('active');document.getElementById('playerModal').style.display='none';if(isCinemaMode)toggleCinemaMode();}
+function togPlay(){let v=document.getElementById('mainVid');v.paused?v.play():v.pause();}
+function setSpeed(speed){document.getElementById('mainVid').playbackRate=parseFloat(speed);}
+function toggleFullscreen(){let v=document.getElementById('mainVid');if(v.requestFullscreen)v.requestFullscreen();else if(v.webkitRequestFullscreen)v.webkitRequestFullscreen();}
+function toggleCinemaMode(){isCinemaMode=!isCinemaMode;document.body.classList.toggle('cinema-mode',isCinemaMode);toast(isCinemaMode?'Mode cinéma activé':'Mode cinéma désactivé','🎬');}
+
+// ===================== PAGE ACCUEIL =====================
+function updateHero(){let act=catalog.filter(m=>m.status==='Actif');let topContent=act.sort((a,b)=>b.views-a.views)[0]||act[0];if(!topContent)return;document.getElementById('heroImg').src=topContent.backdrop||topContent.poster;document.getElementById('heroTitle').innerHTML=topContent.title;document.getElementById('heroDesc').innerHTML=topContent.desc||'';document.getElementById('heroMeta').innerHTML=`<span class="match">★ ${topContent.rating}</span> <span>${topContent.year}</span> <span>${topContent.type}</span>`;document.getElementById('heroPlayBtn').onclick=()=>{if(checkAccessToWatch())openPlayer(topContent);};document.getElementById('heroInfoBtn').onclick=()=>showDetail(topContent.id);}
+function renderHome(){updateHero();let act=catalog.filter(m=>m.status==='Actif');let trending=act.sort((a,b)=>b.views-a.views).slice(0,12);let recent=act.sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,12);let films=act.filter(m=>m.type==='Film').slice(0,12);let series=act.filter(m=>m.type==='Série').slice(0,12);let html='';if(trending.length)html+=`<div class="row"><div class="row-head"><div class="row-title"><i class="fas fa-fire" style="color:var(--red)"></i> Tendances</div><span onclick="openCat('Film')" style="cursor:pointer;font-size:0.8rem">Voir tout →</span></div><div class="row-scroll">${trending.map(m=>cardHTML(m)).join('')}</div></div>`;if(recent.length)html+=`<div class="row"><div class="row-head"><div class="row-title"><i class="fas fa-star"></i> Nouveautés</div></div><div class="row-scroll">${recent.map(m=>cardHTML(m)).join('')}</div></div>`;if(films.length)html+=`<div class="row"><div class="row-head"><div class="row-title">🎬 Films populaires</div></div><div class="row-scroll">${films.map(m=>cardHTML(m)).join('')}</div></div>`;if(series.length)html+=`<div class="row"><div class="row-head"><div class="row-title">📺 Séries à ne pas manquer</div></div><div class="row-scroll">${series.map(m=>cardHTML(m)).join('')}</div></div>`;document.getElementById('homeRows').innerHTML=html;}
+function goHome(){showView('home');}
+
+// ===================== DETAIL =====================
+function showDetail(id){let m=catalog.find(x=>x.id===id);if(!m)return;document.getElementById('detailHeroImg').src=m.backdrop||m.poster;document.getElementById('detailTitle').innerHTML=m.title;document.getElementById('detailDesc').innerHTML=m.desc||'Synopsis non disponible.';document.getElementById('detailMeta').innerHTML=`<span class="match">★ ${m.rating}</span> <span>${m.year}</span> <span>${m.type}</span> <span>${m.genres.join(', ')}</span>`;document.getElementById('detailPlayBtn').onclick=()=>{if(checkAccessToWatch())openPlayer(m);};document.getElementById('detailInfoBox').innerHTML=`<div class="dinfo-row"><span>🎬 Réalisateur</span><span>${m.director||'N/A'}</span></div><div class="dinfo-row"><span>📅 Année</span><span>${m.year}</span></div><div class="dinfo-row"><span>⭐ Note</span><span>${m.rating}/10</span></div><div class="dinfo-row"><span>🎭 Genres</span><span>${m.genres.join(', ')}</span></div><div class="dinfo-row"><span>👁️ Vues</span><span>${(m.views||0).toLocaleString()}</span></div>`;let similar=getSimilarContent(m);document.getElementById('similarList').innerHTML=similar.length?similar.map(s=>cardHTML(s)).join('') :'<p>Aucun contenu similaire</p>';showView('detail');}
+function openCat(type){let data=catalog.filter(m=>m.status==='Actif'&&m.type===type);document.getElementById('catTitle').innerHTML=type==='Film'?'🎬 FILMS':'📺 SÉRIES';let genres=[...new Set(data.flatMap(m=>m.genres))];document.getElementById('catFilters').innerHTML=`<span class="cat-filter active" onclick="filterCat('all',this)">Tous</span>`+genres.map(g=>`<span class="cat-filter" onclick="filterCat('${g}',this)">${g}</span>`).join('');window.currentCatData=data;window.currentCatType=type;renderCatGrid(data);showView('category');}
+function filterCat(genre,el){document.querySelectorAll('.cat-filter').forEach(f=>f.classList.remove('active'));el.classList.add('active');let filtered=genre==='all'?window.currentCatData:window.currentCatData.filter(m=>m.genres.includes(genre));renderCatGrid(filtered);}
+function renderCatGrid(data){document.getElementById('catGrid').innerHTML=data.length?data.map(m=>cardHTML(m)).join('') :'<p style="text-align:center">Aucun contenu trouvé</p>';}
+function showView(v){document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));let target=document.getElementById('view-'+v);if(target)target.classList.add('active');if(v==='home')renderHome();if(v==='admin'){renderDash();renderAdmTable();renderUsers();renderKeysTable();renderLogs();renderBans();fetchIP();}}
+function goBack(){if(window.history.length>1)history.back();else showView('home');}
+function doSearch(val){if(!val.trim()){renderHome();return;}let res=catalog.filter(m=>m.title.toLowerCase().includes(val.toLowerCase())||m.genres.some(g=>g.toLowerCase().includes(val.toLowerCase())));document.getElementById('homeRows').innerHTML=`<div class="row"><div class="row-scroll">${res.map(m=>cardHTML(m)).join('')}</div></div>`;}
+
+// ===================== ADMIN =====================
+function showAdmPage(p,el){document.querySelectorAll('.adm-page').forEach(x=>x.classList.remove('on'));let page=document.getElementById('adm-'+p);if(page)page.classList.add('on');document.querySelectorAll('.side-link').forEach(l=>l.classList.remove('on'));if(el)el.classList.add('on');if(p==='keys')renderKeysTable();if(p==='logs')renderLogs();if(p==='bans')renderBans();if(p==='users')renderUsers();}
+function renderDash(){document.getElementById('dashStats').innerHTML=`<div class="stat-card"><div class="stat-n">${catalog.length}</div><div>Total contenus</div></div><div class="stat-card"><div class="stat-n">${users.length}</div><div>Utilisateurs</div></div><div class="stat-card"><div class="stat-n">${accessKeys.length}</div><div>Clés actives</div></div><div class="stat-card"><div class="stat-n">${watchlist.length}</div><div>Dans les listes</div></div>`;document.getElementById('dashTbody').innerHTML=catalog.slice(0,8).map(m=>`<tr><td>${m.title}</td><td>${m.type}</td></tr>`).join('');}
+function renderAdmTable(){document.getElementById('admTbody').innerHTML=catalog.map(m=>`<tr><td>${m.title}</td><td>${m.type}</td><td>${m.year}</td><td><button class="iBtn" onclick="editItem(${m.id})"><i class="fas fa-edit"></i></button><button class="iBtn d" onclick="delItem(${m.id})"><i class="fas fa-trash"></i></button></td></tr>`).join('');}
+function delItem(id){if(!confirm('Supprimer définitivement ?'))return;catalog=catalog.filter(m=>m.id!==id);saveAll();renderAdmTable();renderDash();toast('Contenu supprimé','🗑️');addLog(`Suppression ID ${id}`);}
+function editItem(id){let m=catalog.find(x=>x.id===id);if(!m)return;editingId=id;document.getElementById('fTitle').value=m.title;document.getElementById('fDesc').value=m.desc||'';document.getElementById('fYear').value=m.year;document.getElementById('fRating').value=m.rating;document.getElementById('fPoster').value=m.poster||'';document.getElementById('fBackdrop').value=m.backdrop||'';document.getElementById('fVideo').value=m.video||'';selectedGenres=[...(m.genres||[])];document.querySelectorAll('.gchip').forEach(c=>c.classList.toggle('on',selectedGenres.includes(c.textContent)));setType(m.type);showAdmPage('add',document.querySelector('.side-link:nth-child(4)'));}
+function saveContent(status){let title=document.getElementById('fTitle').value.trim();if(!title){toast('Titre requis','⚠️');return;}let obj={title,type:document.getElementById('fType').value,year:parseInt(document.getElementById('fYear').value)||2024,rating:parseFloat(document.getElementById('fRating').value)||7.0,desc:document.getElementById('fDesc').value,genres:selectedGenres.length?selectedGenres:['Drame'],status,poster:document.getElementById('fPoster').value,backdrop:document.getElementById('fBackdrop').value,video:document.getElementById('fVideo').value,date:new Date().toISOString().slice(0,10),views:0};if(editingId!==null){let i=catalog.findIndex(m=>m.id===editingId);if(i>-1)catalog[i]={...catalog[i],...obj};toast('Mis à jour','✓');addLog(`Modification: ${title}`);}else{let nid=catalog.length>0?Math.max(...catalog.map(m=>m.id))+1:0;catalog.unshift({id:nid,...obj});toast('Ajouté','✓');addLog(`Ajout: ${title}`);}editingId=null;saveAll();renderAdmTable();renderDash();resetForm();showAdmPage('catalog',document.querySelector('.side-link:nth-child(2)'));}
+function setType(t){document.getElementById('fType').value=t;document.querySelectorAll('.ftab').forEach(btn=>btn.style.background='var(--bg4)');event.target.style.background='var(--red)';}
+function togGenre(el,g){el.classList.toggle('on');if(el.classList.contains('on')){if(!selectedGenres.includes(g))selectedGenres.push(g);}else selectedGenres=selectedGenres.filter(x=>x!==g);}
+function resetForm(){document.getElementById('fTitle').value='';document.getElementById('fDesc').value='';document.getElementById('fYear').value='';document.getElementById('fRating').value='7';document.getElementById('fPoster').value='';document.getElementById('fBackdrop').value='';document.getElementById('fVideo').value='';selectedGenres=[];document.querySelectorAll('.gchip').forEach(c=>c.classList.remove('on'));editingId=null;}
+function renderUsers(){document.getElementById('usersTbody').innerHTML=users.map(u=>`<tr><td>${u.username}</td><td>${u.email}</td><td>${u.role||'user'}</td><td><button class="iBtn d" onclick="delUser(${u.id})"><i class="fas fa-trash"></i></button></td></tr>`).join('');}
+function addUser(){let n=prompt('Pseudo:');if(!n)return;let e=prompt('Email:');users.push({id:Date.now(),username:n,email:e||n+'@example.com',role:'user',date:new Date().toLocaleDateString()});saveAll();renderUsers();addLog(`Ajout user: ${n}`);toast(`${n} ajouté`,'✓');}
+function delUser(id){users=users.filter(u=>u.id!==id);saveAll();renderUsers();addLog(`Suppression user ID ${id}`);toast('Utilisateur supprimé','✓');}
+function initUser(){let n=document.getElementById('welcomeName').value.trim();if(!n)return;currentUser=n;localStorage.setItem('ns_user',n);let savedProfile=localStorage.getItem('ns_currentProfile');let userProfiles=profiles.filter(p=>p.userId===n);if(userProfiles.length){currentProfile=userProfiles.find(p=>p.profileName===savedProfile)||userProfiles[0];}else{profiles.push({userId:n,profileName:'Principal',avatar:'👤'});currentProfile=profiles[profiles.length-1];saveAll();}document.getElementById('welcomeOver').style.display='none';document.getElementById('navAvatar').innerHTML=currentProfile?.avatar||n.charAt(0).toUpperCase();addLog(`Connexion de ${n}`);renderHome();}
+function openImport(){document.getElementById('importModal').classList.add('open');}
+function closeImport(){document.getElementById('importModal').classList.remove('open');}
+function loadQuick(cat,el){document.querySelectorAll('.mass-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');currentImportItems=TMDB_CATALOG[cat]||[];importSelections=[];document.getElementById('importResults').innerHTML=currentImportItems.map((m,i)=>`<div class="ir-card card" onclick="togImportSel(${i},this)" style="cursor:pointer;border:2px solid transparent"><img src="${m.poster}" style="width:100%;aspect-ratio:2/3;object-fit:cover"><div style="padding:0.3rem;font-size:0.7rem">${m.title}</div></div>`).join('');}
+function togImportSel(idx,el){el.classList.toggle('selected');el.style.borderColor=el.classList.contains('selected')?'var(--red)':'transparent';if(importSelections.includes(idx))importSelections=importSelections.filter(i=>i!==idx);else importSelections.push(idx);}
+function doImport(){importSelections.forEach(i=>{let m=currentImportItems[i];if(m&&!catalog.some(x=>x.tmdbId===m.tmdbId)){let newId=catalog.length>0?Math.max(...catalog.map(x=>x.id))+1:0;catalog.unshift({id:newId,title:m.title,type:m.type||'Film',year:m.year,rating:m.rating,genres:m.genres,desc:m.desc,status:'Actif',poster:m.poster,backdrop:'',video:'',date:new Date().toISOString().slice(0,10),views:0,tmdbId:m.tmdbId});}});saveAll();renderAdmTable();renderDash();closeImport();addLog('Import TMDB');toast('Import terminé','✓');}
+function importExternalVideo(){let title=document.getElementById('externalTitle').value.trim();let url=document.getElementById('externalUrl').value.trim();if(!title||!url){toast('Titre et URL requis','⚠️');return;}let newId=catalog.length>0?Math.max(...catalog.map(x=>x.id))+1:0;catalog.unshift({id:newId,title,type:'Film',year:2025,rating:7.0,genres:['Import'],desc:'Importé depuis lien externe',status:'Actif',poster:'https://placehold.co/400x600/222/white?text='+encodeURIComponent(title),backdrop:'',video:url,date:new Date().toISOString().slice(0,10),views:0});saveAll();renderAdmTable();renderDash();toast(`"${title}" importé`,'✓');addLog(`Import externe: ${title}`);closeImport();}
+function toggleTheme(){document.body.classList.toggle('light-mode');localStorage.setItem('ns_theme',document.body.classList.contains('light-mode')?'light':'dark');}
+function toast(msg,ic='✓'){let t=document.getElementById('toast');if(!t){let d=document.createElement('div');d.id='toast';d.className='toast';d.innerHTML=`<span id="toastIc">${ic}</span><span id="toastMsg">${msg}</span>`;document.body.appendChild(d);t=d;}else{document.getElementById('toastIc').innerHTML=ic;document.getElementById('toastMsg').innerHTML=msg;}t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 let sbuf='';
-function chkSecret(e){
-  let k = localStorage.getItem('ns_admin_key') || 'nitro06';
-  // Ajoute la touche pressée au buffer
-  sbuf += e.key;
-  if(sbuf.length > 20) sbuf = sbuf.slice(-20);
-  // Vérifie si le code secret est contenu dans le buffer
-  if(sbuf.toLowerCase().includes(k.toLowerCase())){
-    sbuf = '';
-    addLog('Accès admin via code secret');
-    showView('admin');
-    e.preventDefault();
-  }
-}
-function toast(msg,ic='✓',ok=true){ let t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; document.getElementById('toastIc').textContent=ic; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
-window.addEventListener('scroll',()=>{document.getElementById('topnav')?.classList.toggle('solid',window.scrollY>60);});
-loadData(); checkWelcome(); renderHome(); fetchIP(); if(localStorage.getItem('ns_theme')==='light') document.body.classList.add('light-mode');
-function checkWelcome(){ let s=localStorage.getItem('ns_user'); if(s){currentUser=s;document.getElementById('welcomeOver').style.display='none';document.getElementById('navAvatar').textContent=s.charAt(0).toUpperCase();} }
+function chkSecret(e){sbuf+=e.key;if(sbuf.length>20)sbuf=sbuf.slice(-20);if(sbuf.toLowerCase().includes('nitro06')){sbuf='';addLog('Accès admin via code secret');showView('admin');e.preventDefault();toast('🔓 Mode admin activé','🚀');}}
+window.addEventListener('scroll',()=>{document.getElementById('topnav')?.classList.toggle('solid',window.scrollY>70);});
+document.addEventListener('click',(e)=>{if(!e.target.closest('.nav-avatar')&&!e.target.closest('.profile-dropdown'))document.getElementById('profileDropdown')?.classList.remove('show');});
+let touchStartX=0;document.addEventListener('touchstart',(e)=>{touchStartX=e.touches[0].clientX;});document.addEventListener('touchend',(e)=>{let diff=e.changedTouches[0].clientX-touchStartX;if(Math.abs(diff)>100){let scrollDiv=document.querySelector('.row-scroll');if(scrollDiv){scrollDiv.scrollBy({left:diff>0?-300:300,behavior:'smooth'});}}});
+loadAll();fetchIP();renderHome();if(localStorage.getItem('ns_theme')==='light')document.body.classList.add('light-mode');let savedUser=localStorage.getItem('ns_user');if(savedUser){currentUser=savedUser;document.getElementById('welcomeOver').style.display='none';document.getElementById('navAvatar').innerHTML=currentUser.charAt(0).toUpperCase();renderHome();}
 </script>
 </body>
 </html>
