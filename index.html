@@ -16,8 +16,8 @@
 :root {
   --bg: #000000;
   --bg2: #0a0a0a;
-  --bg3: #141414;
-  --bg4: #1f1f1f;
+  --bg3: #111111;
+  --bg4: #1a1a1a;
   --card-bg: #1a1a1a;
   --white: #ffffff;
   --white80: rgba(255,255,255,0.8);
@@ -25,9 +25,9 @@
   --white40: rgba(255,255,255,0.4);
   --white20: rgba(255,255,255,0.2);
   --white10: rgba(255,255,255,0.1);
-  --red: #e50914;
-  --red-dark: #b81d24;
+  --white05: rgba(255,255,255,0.05);
   --border: #2a2a2a;
+  --accent: #ffffff;
 }
 
 body {
@@ -37,17 +37,13 @@ body {
   overflow-x: hidden;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--white20); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--white40); }
 
-/* Views */
 .view { display: none; min-height: 100vh; }
 .view.active { display: block; }
 
-/* Navigation */
 #topnav {
   position: fixed;
   top: 0;
@@ -70,7 +66,7 @@ body {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 1.8rem;
   letter-spacing: 1px;
-  color: var(--red);
+  color: var(--white);
   cursor: pointer;
 }
 .nav-links {
@@ -122,16 +118,17 @@ body {
 .avatar {
   width: 36px;
   height: 36px;
-  border-radius: 4px;
-  background: var(--red);
+  border-radius: 50%;
+  background: var(--white20);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   cursor: pointer;
   transition: transform 0.2s;
+  color: var(--white);
 }
-.avatar:hover { transform: scale(1.05); }
+.avatar:hover { transform: scale(1.05); background: var(--white30); }
 .theme-btn {
   background: none;
   border: none;
@@ -146,8 +143,8 @@ body {
   right: 4%;
   background: var(--bg3);
   border: 1px solid var(--border);
-  border-radius: 4px;
-  min-width: 160px;
+  border-radius: 8px;
+  min-width: 180px;
   opacity: 0;
   visibility: hidden;
   transform: translateY(-10px);
@@ -172,7 +169,6 @@ body {
   color: var(--white);
 }
 
-/* Hero Section */
 .hero {
   position: relative;
   height: 85vh;
@@ -190,7 +186,7 @@ body {
 .hero-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(97deg, rgba(0,0,0,0.9) 20%, rgba(0,0,0,0.5) 60%, transparent 100%);
+  background: linear-gradient(97deg, rgba(0,0,0,0.95) 20%, rgba(0,0,0,0.6) 60%, transparent 100%);
 }
 .hero-bottom {
   position: absolute;
@@ -210,7 +206,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border-left: 3px solid var(--red);
+  border-left: 3px solid var(--white);
   padding-left: 12px;
   margin-bottom: 16px;
   font-size: 0.7rem;
@@ -279,7 +275,6 @@ body {
 }
 .btn-info:hover { background: var(--white40); transform: scale(1.02); }
 
-/* Rows */
 .rows {
   padding: 0 4% 2rem;
 }
@@ -298,21 +293,20 @@ body {
 }
 .row-scroll {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   overflow-x: auto;
   scroll-behavior: smooth;
   padding-bottom: 8px;
 }
 .row-scroll::-webkit-scrollbar { display: none; }
 
-/* Cards */
 .card {
   flex: 0 0 auto;
   width: 170px;
   cursor: pointer;
   transition: transform 0.3s ease;
   position: relative;
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
 }
 .card:hover {
@@ -366,7 +360,10 @@ body {
   transition: all 0.2s;
 }
 .card-watchlist:hover {
-  background: var(--red);
+  background: var(--white);
+}
+.card-watchlist:hover i {
+  color: #000;
 }
 .card-watchlist i {
   font-size: 12px;
@@ -377,27 +374,14 @@ body {
   bottom: 0;
   left: 0;
   height: 3px;
-  background: var(--red);
+  background: var(--white);
   width: 0%;
 }
 
-/* Category View */
-#view-category {
-  padding-top: 80px;
-}
-.cat-header {
-  padding: 20px 4% 0;
-}
-.cat-title {
-  font-size: 2rem;
-  font-weight: 700;
-}
-.cat-filters {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 16px;
-}
+#view-category { padding-top: 80px; }
+.cat-header { padding: 20px 4% 0; }
+.cat-title { font-size: 2rem; font-weight: 700; }
+.cat-filters { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
 .cat-filter {
   background: var(--bg4);
   padding: 6px 16px;
@@ -411,9 +395,7 @@ body {
   background: var(--white);
   color: #000;
 }
-.cat-filter:hover:not(.active) {
-  background: var(--white20);
-}
+.cat-filter:hover:not(.active) { background: var(--white20); }
 .cat-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -421,21 +403,14 @@ body {
   padding: 24px 4%;
 }
 
-/* Detail View */
-.detail-body {
-  padding: 0 4% 3rem;
-}
+.detail-body { padding: 0 4% 3rem; }
 .detail-grid {
   display: grid;
   grid-template-columns: 1fr 300px;
   gap: 2rem;
   margin-top: 2rem;
 }
-.detail-desc {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--white80);
-}
+.detail-desc { font-size: 1rem; line-height: 1.6; color: var(--white80); }
 .detail-info {
   background: var(--bg3);
   border: 1px solid var(--border);
@@ -449,14 +424,8 @@ body {
   border-bottom: 1px solid var(--border);
   font-size: 0.8rem;
 }
-.similar-scroll {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  margin-top: 16px;
-}
+.similar-scroll { display: flex; gap: 12px; overflow-x: auto; margin-top: 16px; }
 
-/* Player Modal */
 .modal {
   position: fixed;
   inset: 0;
@@ -466,9 +435,7 @@ body {
   align-items: center;
   justify-content: center;
 }
-.modal.open {
-  display: flex;
-}
+.modal.open { display: flex; }
 .player-container {
   width: 90%;
   max-width: 1100px;
@@ -496,11 +463,7 @@ body {
   aspect-ratio: 16/9;
   background: #000;
 }
-video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
+video { width: 100%; height: 100%; object-fit: contain; }
 .player-controls {
   display: flex;
   align-items: center;
@@ -533,16 +496,12 @@ video {
 }
 .progress-fill {
   height: 100%;
-  background: var(--red);
+  background: var(--white);
   width: 0%;
   border-radius: 2px;
 }
-.time-display {
-  font-size: 0.75rem;
-  color: var(--white80);
-}
+.time-display { font-size: 0.75rem; color: var(--white80); }
 
-/* Admin Panel */
 .admin-nav {
   position: sticky;
   top: 0;
@@ -555,10 +514,7 @@ video {
   padding: 0 2rem;
   z-index: 100;
 }
-.admin-layout {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-}
+.admin-layout { display: grid; grid-template-columns: 240px 1fr; }
 .admin-sidebar {
   background: var(--bg2);
   border-right: 1px solid var(--border);
@@ -575,24 +531,15 @@ video {
   cursor: pointer;
   transition: all 0.2s;
 }
-.side-link:hover {
-  background: var(--white10);
-  color: var(--white);
-}
+.side-link:hover { background: var(--white10); color: var(--white); }
 .side-link.active {
   background: var(--white10);
   color: var(--white);
-  border-left: 3px solid var(--red);
+  border-left: 3px solid var(--white);
 }
-.admin-main {
-  padding: 1.5rem;
-}
-.admin-page {
-  display: none;
-}
-.admin-page.active {
-  display: block;
-}
+.admin-main { padding: 1.5rem; }
+.admin-page { display: none; }
+.admin-page.active { display: block; }
 .stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -605,20 +552,14 @@ video {
   border-radius: 8px;
   padding: 1rem;
 }
-.stat-number {
-  font-size: 2rem;
-  font-weight: 700;
-}
+.stat-number { font-size: 2rem; font-weight: 700; }
 .table-wrapper {
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: 8px;
   overflow: auto;
 }
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
+table { width: 100%; border-collapse: collapse; }
 th {
   text-align: left;
   padding: 12px 16px;
@@ -647,16 +588,8 @@ input, textarea, select {
   font-family: inherit;
   font-size: 0.85rem;
 }
-input:focus, textarea:focus {
-  outline: none;
-  border-color: var(--red);
-}
-.genres {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin: 16px 0;
-}
+input:focus, textarea:focus { outline: none; border-color: var(--white40); }
+.genres { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
 .genre-chip {
   background: var(--bg4);
   border: 1px solid var(--border);
@@ -667,12 +600,13 @@ input:focus, textarea:focus {
   transition: all 0.2s;
 }
 .genre-chip.active {
-  background: var(--red);
-  border-color: var(--red);
+  background: var(--white);
+  border-color: var(--white);
+  color: #000;
 }
 .btn-save {
-  background: var(--red);
-  color: white;
+  background: var(--white);
+  color: #000;
   border: none;
   padding: 10px 24px;
   border-radius: 6px;
@@ -680,9 +614,7 @@ input:focus, textarea:focus {
   cursor: pointer;
   transition: all 0.2s;
 }
-.btn-save:hover {
-  background: var(--red-dark);
-}
+.btn-save:hover { background: #e0e0e0; }
 .btn-secondary {
   background: var(--bg4);
   color: var(--white);
@@ -691,8 +623,8 @@ input:focus, textarea:focus {
   border-radius: 6px;
   cursor: pointer;
 }
+.btn-secondary:hover { background: var(--white20); }
 
-/* Welcome Screen */
 .welcome-screen {
   position: fixed;
   inset: 0;
@@ -710,7 +642,7 @@ input:focus, textarea:focus {
 .welcome-logo {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 3.5rem;
-  color: var(--red);
+  color: var(--white);
   margin-bottom: 1rem;
 }
 .welcome-input {
@@ -724,7 +656,6 @@ input:focus, textarea:focus {
   text-align: center;
 }
 
-/* Access Modal */
 .access-modal {
   position: fixed;
   inset: 0;
@@ -734,9 +665,7 @@ input:focus, textarea:focus {
   align-items: center;
   justify-content: center;
 }
-.access-modal.open {
-  display: flex;
-}
+.access-modal.open { display: flex; }
 .access-box {
   background: var(--bg3);
   border: 1px solid var(--border);
@@ -755,7 +684,6 @@ input:focus, textarea:focus {
   border-radius: 4px;
 }
 
-/* Profile Modal */
 .profile-modal {
   position: fixed;
   inset: 0;
@@ -765,9 +693,7 @@ input:focus, textarea:focus {
   align-items: center;
   justify-content: center;
 }
-.profile-modal.open {
-  display: flex;
-}
+.profile-modal.open { display: flex; }
 .profile-box {
   background: var(--bg3);
   border: 1px solid var(--border);
@@ -779,24 +705,15 @@ input:focus, textarea:focus {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: var(--red);
+  background: var(--white20);
   margin: 0 auto 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
 }
-.profile-list {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin: 1rem 0;
-  flex-wrap: wrap;
-}
-.profile-item {
-  text-align: center;
-  cursor: pointer;
-}
+.profile-list { display: flex; gap: 1rem; justify-content: center; margin: 1rem 0; flex-wrap: wrap; }
+.profile-item { text-align: center; cursor: pointer; }
 .profile-icon {
   width: 60px;
   height: 60px;
@@ -808,11 +725,8 @@ input:focus, textarea:focus {
   font-size: 1.5rem;
   transition: all 0.2s;
 }
-.profile-item:hover .profile-icon {
-  background: var(--red);
-}
+.profile-item:hover .profile-icon { background: var(--white20); }
 
-/* Toast */
 .toast {
   position: fixed;
   bottom: 2rem;
@@ -829,12 +743,8 @@ input:focus, textarea:focus {
   opacity: 0;
   transition: all 0.3s;
 }
-.toast.show {
-  transform: translateY(0);
-  opacity: 1;
-}
+.toast.show { transform: translateY(0); opacity: 1; }
 
-/* Responsive */
 @media (max-width: 768px) {
   .nav-links { display: none; }
   .detail-grid { grid-template-columns: 1fr; }
@@ -849,7 +759,6 @@ input:focus, textarea:focus {
 </head>
 <body>
 
-<!-- Welcome Screen -->
 <div id="welcomeScreen" class="welcome-screen">
   <div class="welcome-box">
     <div class="welcome-logo">NET STREAMING</div>
@@ -860,10 +769,9 @@ input:focus, textarea:focus {
   </div>
 </div>
 
-<!-- Access Modal -->
 <div id="accessModal" class="access-modal">
   <div class="access-box">
-    <i class="fas fa-lock" style="font-size: 2rem; color: var(--red); margin-bottom: 1rem;"></i>
+    <i class="fas fa-lock" style="font-size: 2rem; margin-bottom: 1rem;"></i>
     <h3>Accès restreint</h3>
     <p style="color: #aaa; margin: 0.5rem 0;">Une clé d'accès est requise pour regarder</p>
     <input type="text" id="accessKeyInput" class="access-input" placeholder="Entrez votre clé">
@@ -872,7 +780,6 @@ input:focus, textarea:focus {
   </div>
 </div>
 
-<!-- Profile Modal -->
 <div id="profileModal" class="profile-modal">
   <div class="profile-box">
     <div style="text-align: center;">
@@ -891,7 +798,6 @@ input:focus, textarea:focus {
   </div>
 </div>
 
-<!-- Navigation -->
 <nav id="topnav">
   <div class="nav-logo" onclick="showView('home')">NET STREAMING</div>
   <ul class="nav-links">
@@ -916,7 +822,6 @@ input:focus, textarea:focus {
   </div>
 </nav>
 
-<!-- Home View -->
 <div id="view-home" class="view active">
   <div class="hero" id="heroSection">
     <img class="hero-backdrop" id="heroBackdrop" src="">
@@ -936,7 +841,6 @@ input:focus, textarea:focus {
   <div class="rows" id="homeRows"></div>
 </div>
 
-<!-- Category View -->
 <div id="view-category" class="view">
   <div class="cat-header">
     <div class="cat-title" id="categoryTitle">Films</div>
@@ -945,7 +849,6 @@ input:focus, textarea:focus {
   <div class="cat-grid" id="categoryGrid"></div>
 </div>
 
-<!-- Detail View -->
 <div id="view-detail" class="view">
   <div class="hero" style="height: 60vh;">
     <img class="hero-backdrop" id="detailBackdrop" src="">
@@ -976,7 +879,6 @@ input:focus, textarea:focus {
   </div>
 </div>
 
-<!-- Watchlist View -->
 <div id="view-watchlist" class="view">
   <div class="cat-header">
     <div class="cat-title">📋 Ma liste</div>
@@ -984,7 +886,6 @@ input:focus, textarea:focus {
   <div class="cat-grid" id="watchlistGrid"></div>
 </div>
 
-<!-- Continue View -->
 <div id="view-continue" class="view">
   <div class="cat-header">
     <div class="cat-title">⏯️ Continuer à regarder</div>
@@ -992,7 +893,6 @@ input:focus, textarea:focus {
   <div class="cat-grid" id="continueGrid"></div>
 </div>
 
-<!-- Admin Panel -->
 <div id="view-admin" class="view">
   <div class="admin-nav">
     <div class="nav-logo" style="font-size: 1.3rem;">ADMIN NET STREAMING</div>
@@ -1008,7 +908,6 @@ input:focus, textarea:focus {
       <div class="side-link" onclick="showAdminPage('logs', this)"><i class="fas fa-history"></i> Logs</div>
     </div>
     <div class="admin-main">
-      <!-- Dashboard -->
       <div id="admin-dashboard" class="admin-page active">
         <div class="stats" id="dashboardStats"></div>
         <div class="table-wrapper">
@@ -1018,7 +917,6 @@ input:focus, textarea:focus {
           </table>
         </div>
       </div>
-      <!-- Catalogue -->
       <div id="admin-catalog" class="admin-page">
         <div class="table-wrapper">
           <table>
@@ -1027,7 +925,6 @@ input:focus, textarea:focus {
           </table>
         </div>
       </div>
-      <!-- Ajouter -->
       <div id="admin-add" class="admin-page">
         <div style="background: var(--bg3); border-radius: 12px; padding: 1.5rem;">
           <div style="display: flex; gap: 12px; margin-bottom: 1rem;">
@@ -1061,17 +958,14 @@ input:focus, textarea:focus {
           </div>
         </div>
       </div>
-      <!-- Clés -->
       <div id="admin-keys" class="admin-page">
         <button class="btn-save" onclick="generateNewKey()" style="margin-bottom: 1rem;">+ Générer une clé</button>
         <div class="table-wrapper" id="keysTable"></div>
       </div>
-      <!-- Utilisateurs -->
       <div id="admin-users" class="admin-page">
         <button class="btn-save" onclick="addSystemUser()" style="margin-bottom: 1rem;">+ Ajouter utilisateur</button>
         <div class="table-wrapper" id="usersTable"></div>
       </div>
-      <!-- Logs -->
       <div id="admin-logs" class="admin-page">
         <button class="btn-secondary" onclick="clearAllLogs()" style="margin-bottom: 1rem;">Effacer les logs</button>
         <div class="table-wrapper" id="logsTable"></div>
@@ -1080,7 +974,6 @@ input:focus, textarea:focus {
   </div>
 </div>
 
-<!-- Player Modal -->
 <div id="playerModal" class="modal">
   <div class="player-container">
     <div class="player-header">
@@ -1113,9 +1006,9 @@ input:focus, textarea:focus {
 <script>
 // ===================== DATABASE =====================
 let catalog = [
-  { id: 0, title: "Inception", type: "Film", year: 2010, rating: 8.8, genres: ["Action", "Sci-Fi"], director: "Christopher Nolan", desc: "Un voleur qui pénètre les rêves pour voler des secrets se voit offrir une chance de rédemption.", poster: "https://image.tmdb.org/t/p/w400/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg", backdrop: "https://image.tmdb.org/t/p/w1280/s3TBrRGB1iav7gFOCNx3H31MoES.jpg", video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", views: 12500, date: "2024-12-01" },
-  { id: 1, title: "Interstellar", type: "Film", year: 2014, rating: 8.6, genres: ["Drame", "Sci-Fi"], director: "Christopher Nolan", desc: "Une équipe d'explorateurs voyage à travers un trou de ver.", poster: "https://image.tmdb.org/t/p/w400/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", backdrop: "https://image.tmdb.org/t/p/w1280/xJHokMbljvjADYdit5fK5VQsXEG.jpg", video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFunflies.mp4", views: 9870, date: "2024-12-05" },
-  { id: 2, title: "Stranger Things", type: "Série", year: 2016, rating: 8.7, genres: ["Horreur", "Sci-Fi"], seasons: 4, desc: "Un garçon disparaît, une ville découvre des forces surnaturelles.", poster: "https://image.tmdb.org/t/p/w400/49WJfeN0moxb9IPfGn8AIqMGskD.jpg", backdrop: "https://image.tmdb.org/t/p/w1280/56v2KjBlU4XaOv9rVYEQypROD7P.jpg", video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", views: 25600, date: "2024-11-20" }
+  { id: 0, title: "Inception", type: "Film", year: 2010, rating: 8.8, genres: ["Action", "Sci-Fi"], director: "Christopher Nolan", desc: "Un voleur qui pénètre les rêves pour voler des secrets se voit offrir une chance de rédemption.", poster: "https://image.tmdb.org/t/p/w400/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg", backdrop: "https://image.tmdb.org/t/p/w1280/s3TBrRGB1iav7gFOCNx3H31MoES.jpg", video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", views: 12500, date: "2024-12-01", status: "Actif" },
+  { id: 1, title: "Interstellar", type: "Film", year: 2014, rating: 8.6, genres: ["Drame", "Sci-Fi"], director: "Christopher Nolan", desc: "Une équipe d'explorateurs voyage à travers un trou de ver.", poster: "https://image.tmdb.org/t/p/w400/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", backdrop: "https://image.tmdb.org/t/p/w1280/xJHokMbljvjADYdit5fK5VQsXEG.jpg", video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFunflies.mp4", views: 9870, date: "2024-12-05", status: "Actif" },
+  { id: 2, title: "Stranger Things", type: "Série", year: 2016, rating: 8.7, genres: ["Horreur", "Sci-Fi"], seasons: 4, desc: "Un garçon disparaît, une ville découvre des forces surnaturelles.", poster: "https://image.tmdb.org/t/p/w400/49WJfeN0moxb9IPfGn8AIqMGskD.jpg", backdrop: "https://image.tmdb.org/t/p/w1280/56v2KjBlU4XaOv9rVYEQypROD7P.jpg", video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4", views: 25600, date: "2024-11-20", status: "Actif" }
 ];
 let users = [{ id: 1, username: "Admin", email: "admin@netstream.com", role: "admin" }];
 let logs = [];
@@ -1130,9 +1023,7 @@ let editingGenres = [];
 let editingId = null;
 let currentVideoId = null;
 let videoElement = null;
-let secretBuffer = "";
 
-// ===================== STORAGE =====================
 function saveData() {
   localStorage.setItem("ns_catalog", JSON.stringify(catalog));
   localStorage.setItem("ns_users", JSON.stringify(users));
@@ -1152,13 +1043,12 @@ function loadData() {
   let p = localStorage.getItem("ns_profiles"); if (p) profiles = JSON.parse(p);
 }
 
-// ===================== LOGS =====================
 function addLog(action) {
   let log = { id: Date.now(), user: currentUser || "Anonyme", action: action, time: new Date().toLocaleString() };
   logs.unshift(log);
   if (logs.length > 100) logs.pop();
   saveData();
-  renderLogsTable();
+  if (document.getElementById("logsTable")) renderLogsTable();
 }
 function renderLogsTable() {
   let container = document.getElementById("logsTable");
@@ -1171,7 +1061,6 @@ function renderLogsTable() {
 }
 function clearAllLogs() { logs = []; saveData(); renderLogsTable(); showToast("Logs effacés", "✓"); }
 
-// ===================== ACCÈS =====================
 function verifyAccess() {
   let code = document.getElementById("accessKeyInput").value.trim().toUpperCase();
   let key = accessKeys.find(k => k.code === code);
@@ -1225,14 +1114,13 @@ function renderKeysTable() {
   container.innerHTML = html;
 }
 
-// ===================== PROFILS =====================
 function openProfileModal() { document.getElementById("profileModal").classList.add("open"); renderProfilesList(); document.getElementById("profileNameDisplay").innerText = currentUser || "Invité"; }
 function closeProfileModal() { document.getElementById("profileModal").classList.remove("open"); }
 function renderProfilesList() {
   let container = document.getElementById("profileListContainer");
   if (!container) return;
   let userProfiles = profiles.filter(p => p.userId === currentUser);
-  if (userProfiles.length === 0) {
+  if (userProfiles.length === 0 && currentUser) {
     profiles.push({ userId: currentUser, profileName: "Principal", avatar: "👤" });
     currentProfile = profiles[profiles.length - 1];
     saveData();
@@ -1270,7 +1158,6 @@ function logout() {
 }
 function toggleDropdown() { document.getElementById("userDropdown").classList.toggle("show"); }
 
-// ===================== WATCHLIST & CONTINUE =====================
 function toggleWatchlist(contentId) {
   let existing = watchlist.find(w => w.userId === currentUser && w.contentId === contentId);
   if (existing) {
@@ -1314,14 +1201,13 @@ function renderContinueView() {
   if (!grid) return;
   let items = continueWatching.filter(c => c.userId === currentUser).map(c => {
     let content = catalog.find(m => m.id === c.contentId);
-    if (content) content._progress = (c.progress / (content.duration || 120)) * 100;
+    if (content) content._progress = (c.progress / 120) * 100;
     return content;
   }).filter(c => c);
   if (items.length === 0) { grid.innerHTML = "<p style='color: #888; text-align: center;'>Aucun contenu en cours</p>"; return; }
   grid.innerHTML = items.map(m => renderCard(m, true)).join('');
 }
 
-// ===================== CARDS =====================
 function renderCard(m, showProgress = false) {
   let inList = isInWatchlist(m.id);
   let progress = getProgress(m.id);
@@ -1340,7 +1226,6 @@ function renderCard(m, showProgress = false) {
   `;
 }
 
-// ===================== HOME =====================
 function renderHome() {
   let active = catalog.filter(m => m.status !== "Archivé");
   let trending = [...active].sort((a, b) => b.views - a.views).slice(0, 12);
@@ -1348,7 +1233,7 @@ function renderHome() {
   let films = active.filter(m => m.type === "Film").slice(0, 12);
   let series = active.filter(m => m.type === "Série").slice(0, 12);
   let html = "";
-  if (trending.length) html += `<div class="row"><div class="row-header"><div class="row-title"><i class="fas fa-fire" style="color: var(--red);"></i> Tendances</div><span style="font-size: 0.7rem; color: #888;">Voir tout →</span></div><div class="row-scroll">${trending.map(m => renderCard(m)).join('')}</div></div>`;
+  if (trending.length) html += `<div class="row"><div class="row-header"><div class="row-title"><i class="fas fa-fire"></i> Tendances</div><span style="font-size: 0.7rem; color: #888;">Voir tout →</span></div><div class="row-scroll">${trending.map(m => renderCard(m)).join('')}</div></div>`;
   if (recent.length) html += `<div class="row"><div class="row-header"><div class="row-title">✨ Nouveautés</div></div><div class="row-scroll">${recent.map(m => renderCard(m)).join('')}</div></div>`;
   if (films.length) html += `<div class="row"><div class="row-header"><div class="row-title">🎬 Films</div></div><div class="row-scroll">${films.map(m => renderCard(m)).join('')}</div></div>`;
   if (series.length) html += `<div class="row"><div class="row-header"><div class="row-title">📺 Séries</div></div><div class="row-scroll">${series.map(m => renderCard(m)).join('')}</div></div>`;
@@ -1373,7 +1258,6 @@ function openCategory(type) {
   allGenres.forEach(g => { filtersHtml += `<span class="cat-filter" data-genre="${g}" onclick="filterCategory('${g}', this)">${g}</span>`; });
   document.getElementById("categoryFilters").innerHTML = filtersHtml;
   window.currentCategoryData = data;
-  window.currentCategoryType = type;
   renderCategoryGrid(data);
   showView("category");
 }
@@ -1414,7 +1298,6 @@ function searchContent(query) {
   if (results.length === 0) document.getElementById("homeRows").innerHTML = "<p style='text-align: center; padding: 50px;'>Aucun résultat</p>";
 }
 
-// ===================== LECTEUR =====================
 function openPlayer(movie) {
   if (!checkAccess()) return;
   currentVideoId = movie.id;
@@ -1427,11 +1310,6 @@ function openPlayer(movie) {
   if (saved && saved.progress) {
     videoElement.currentTime = saved.progress;
   }
-  setupVideoListeners(movie.id);
-  addLog(`Lecture: ${movie.title}`);
-}
-function setupVideoListeners(contentId) {
-  if (!videoElement) return;
   videoElement.ontimeupdate = () => {
     let percent = (videoElement.currentTime / videoElement.duration) * 100;
     document.getElementById("progressFill").style.width = percent + "%";
@@ -1440,10 +1318,11 @@ function setupVideoListeners(contentId) {
     let totalMin = Math.floor(videoElement.duration / 60);
     let totalSec = Math.floor(videoElement.duration % 60);
     document.getElementById("timeDisplay").innerHTML = `${currentMin}:${currentSec.toString().padStart(2,'0')} / ${totalMin}:${totalSec.toString().padStart(2,'0')}`;
-    if (videoElement.duration) saveProgress(contentId, videoElement.currentTime);
+    if (videoElement.duration) saveProgress(movie.id, videoElement.currentTime);
   };
   videoElement.onplay = () => { document.getElementById("playPauseIcon").className = "fas fa-pause"; };
   videoElement.onpause = () => { document.getElementById("playPauseIcon").className = "fas fa-play"; };
+  addLog(`Lecture: ${movie.title}`);
 }
 function closePlayer() {
   if (videoElement) videoElement.pause();
@@ -1461,42 +1340,6 @@ function toggleFullscreenVideo() {
   else if (videoElement.webkitRequestFullscreen) videoElement.webkitRequestFullscreen();
 }
 
-<script>
-// ===================== CHARGEMENT DES DONNÉES =====================
-loadData();
-if (localStorage.getItem("ns_theme") === "light") document.body.classList.add("light-mode");
-
-// ===================== CODE SECRET ADMIN =====================
-// TAPE "nitro06" N'IMPORTE OÙ POUR OUVRIR L'ADMIN
-let adminCode = "";
-window.onkeydown = function(e) {
-    adminCode += e.key;
-    if (adminCode.length > 10) adminCode = adminCode.slice(-6);
-    if (adminCode === "nitro06") {
-        adminCode = "";
-        alert("✅ ADMIN ACTIVÉ !");
-        // Fermer toutes les vues et ouvrir l'admin
-        var toutesLesVues = document.querySelectorAll(".view");
-        for(var i = 0; i < toutesLesVues.length; i++) {
-            toutesLesVues[i].classList.remove("active");
-        }
-        document.getElementById("view-admin").classList.add("active");
-    }
-};
-
-// ===================== RESTE DE TON CODE =====================
-let savedUserStorage = localStorage.getItem("ns_user");
-if (savedUserStorage) {
-  currentUser = savedUserStorage;
-  let savedProfileStorage = localStorage.getItem("ns_currentProfile");
-  let userProfilesStorage = profiles.filter(p => p.userId === savedUserStorage);
-  if (userProfilesStorage.length) currentProfile = userProfilesStorage.find(p => p.profileName === savedProfileStorage) || userProfilesStorage[0];
-  document.getElementById("welcomeScreen").style.display = "none";
-  document.getElementById("avatarBtn").innerHTML = currentProfile?.avatar || savedUserStorage.charAt(0);
-  renderHome();
-}
-
-// ===================== ADMIN =====================
 function showAdminPage(page, el) {
   document.querySelectorAll(".admin-page").forEach(p => p.classList.remove("active"));
   document.getElementById(`admin-${page}`).classList.add("active");
@@ -1526,7 +1369,7 @@ function renderCatalogTable() {
       <td>${m.title}</td>
       <td>${m.type}</td>
       <td>${m.year}</td>
-      <td><button class="btn-secondary" style="padding: 4px 12px;" onclick="editContent(${m.id})">✏️</button> <button class="btn-secondary" style="padding: 4px 12px; background: var(--red);" onclick="deleteContent(${m.id})">🗑️</button></td>
+      <td><button class="btn-secondary" style="padding: 4px 12px;" onclick="editContent(${m.id})">✏️</button> <button class="btn-secondary" style="padding: 4px 12px; background: var(--white20);" onclick="deleteContent(${m.id})">🗑️</button></td>
     </tr>`;
   });
   document.getElementById("catalogTable").innerHTML = html;
@@ -1617,7 +1460,7 @@ function clearAddForm() {
 function renderUsersTable() {
   let html = `<table><thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Action</th></tr></thead><tbody>`;
   users.forEach(u => {
-    html += `<tr><td>${u.username}</td><td>${u.email}</td><td>${u.role || "user"}</td><td><button class="btn-secondary" style="padding: 4px 12px; background: var(--red);" onclick="deleteUser(${u.id})">Supprimer</button></td></tr>`;
+    html += `<tr><td>${u.username}</td><td>${u.email}</td><td>${u.role || "user"}</td><td><button class="btn-secondary" style="padding: 4px 12px; background: var(--white20);" onclick="deleteUser(${u.id})">Supprimer</button></td></tr>`;
   });
   html += `</tbody></table>`;
   document.getElementById("usersTable").innerHTML = html;
@@ -1640,7 +1483,6 @@ function deleteUser(id) {
   showToast("Utilisateur supprimé", "✓");
 }
 
-// ===================== UI =====================
 function showView(viewName) {
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
   document.getElementById(`view-${viewName}`).classList.add("active");
@@ -1650,7 +1492,7 @@ function showView(viewName) {
 }
 function showToast(msg, icon = "✓") {
   let toast = document.getElementById("toast");
-  toast.innerHTML = `<i class="fas fa-${icon === '✓' ? 'check-circle' : 'exclamation-circle'}"></i> ${msg}`;
+  toast.innerHTML = `<i class="fas ${icon === '✓' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${msg}`;
   toast.classList.add("show");
   setTimeout(() => toast.classList.remove("show"), 3000);
 }
@@ -1677,6 +1519,35 @@ function startApp() {
   addLog(`Connexion de ${name}`);
   renderHome();
 }
+
+loadData();
+if (localStorage.getItem("ns_theme") === "light") document.body.classList.add("light-mode");
+
+// CODE SECRET ADMIN - TAPE "nitro06"
+let adminBuffer = "";
+window.onkeydown = function(e) {
+  adminBuffer += e.key;
+  if (adminBuffer.length > 10) adminBuffer = adminBuffer.slice(-6);
+  if (adminBuffer === "nitro06") {
+    adminBuffer = "";
+    alert("✅ ADMIN ACTIVÉ !");
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    document.getElementById("view-admin").classList.add("active");
+    addLog("Accès admin via code secret");
+  }
+};
+
+let savedUserStorage = localStorage.getItem("ns_user");
+if (savedUserStorage) {
+  currentUser = savedUserStorage;
+  let savedProfileStorage = localStorage.getItem("ns_currentProfile");
+  let userProfilesStorage = profiles.filter(p => p.userId === savedUserStorage);
+  if (userProfilesStorage.length) currentProfile = userProfilesStorage.find(p => p.profileName === savedProfileStorage) || userProfilesStorage[0];
+  document.getElementById("welcomeScreen").style.display = "none";
+  document.getElementById("avatarBtn").innerHTML = currentProfile?.avatar || savedUserStorage.charAt(0);
+  renderHome();
+}
+
 window.onclick = function(e) {
   if (!e.target.closest(".avatar") && !e.target.closest(".dropdown")) {
     document.getElementById("userDropdown").classList.remove("show");
@@ -1691,7 +1562,6 @@ window.addEventListener("scroll", () => {
   if (window.scrollY > 50) nav.classList.add("solid");
   else nav.classList.remove("solid");
 });
-
 </script>
 </body>
 </html>
